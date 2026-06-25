@@ -267,6 +267,14 @@ export interface RequestTabContext {
    * Collection-level headers merged before request headers at send time.
    */
   collectionHeaders: Array<{ key: string; value: string; enabled: boolean }>;
+
+  /**
+   * Merged collection and environment values for {{key}} substitution.
+   *
+   * Environment overrides collection on duplicate keys. Empty variable values
+   * fall back to each variable's defaultValue (same as Send).
+   */
+  variables: Record<string, string>;
 }
 
 /**
@@ -622,32 +630,32 @@ export type BuiltinThemeId = 'light' | 'dark' | 'system' | 'high-contrast';
  */
 export type ActiveTheme =
   | {
-      /**
-       * Theme provided by HarborClient.
-       */
-      source: 'builtin';
+    /**
+     * Theme provided by HarborClient.
+     */
+    source: 'builtin';
 
-      /**
-       * Built-in theme id.
-       */
-      id: BuiltinThemeId;
-    }
+    /**
+     * Built-in theme id.
+     */
+    id: BuiltinThemeId;
+  }
   | {
-      /**
-       * Theme registered by a plugin via {@link PluginThemes.register}.
-       */
-      source: 'plugin';
+    /**
+     * Theme registered by a plugin via {@link PluginThemes.register}.
+     */
+    source: 'plugin';
 
-      /**
-       * Plugin package id from `manifest.json`.
-       */
-      pluginId: string;
+    /**
+     * Plugin package id from `manifest.json`.
+     */
+    pluginId: string;
 
-      /**
-       * Theme id from {@link ThemeContribution.id}.
-       */
-      themeId: string;
-    };
+    /**
+     * Theme id from {@link ThemeContribution.id}.
+     */
+    themeId: string;
+  };
 
 /**
  * Custom appearance theme registration and change notifications.
