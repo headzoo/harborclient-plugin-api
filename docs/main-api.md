@@ -35,6 +35,8 @@ export function activate(hc: MainPluginContext): void {
 
 Register a callback that runs after the response is received. Requires the `http` permission.
 
+For UI-only plugins that react to completed sends (history, recent-requests, response diff), prefer renderer-side `hc.http.onAfterSend` in the renderer entry — it fires in-process with no main entry, custom IPC channel, or polling. Use this main-process hook when you need to run logic in the SES-hardened utilityProcess or mutate shared main-side state.
+
 ## hc.ipc.handle(channel, handler)
 
 **Signature:** `(channel: string, handler: (...args) => unknown) => Disposable`

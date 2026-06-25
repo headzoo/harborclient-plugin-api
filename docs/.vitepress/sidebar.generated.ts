@@ -162,6 +162,43 @@ export const sidebar: DefaultTheme.SidebarItem[] =
         "link": "/renderer-overview#react-and-jsx"
       },
       {
+        "text": "hc.http",
+        "link": "/renderer-overview#hchttp",
+        "items": [
+          {
+            "text": "hc.http.onAfterSend(handler)",
+            "link": "/renderer-overview#hchttponaftersendhandler"
+          }
+        ],
+        "collapsed": false
+      },
+      {
+        "text": "hc.ipc",
+        "link": "/renderer-overview#hcipc",
+        "items": [
+          {
+            "text": "hc.ipc.invoke(channel, ...args)",
+            "link": "/renderer-overview#hcipcinvokechannel-args"
+          }
+        ],
+        "collapsed": false
+      },
+      {
+        "text": "hc.host",
+        "link": "/renderer-overview#hchost",
+        "items": [
+          {
+            "text": "hc.host.openRequestDraft(payload)",
+            "link": "/renderer-overview#hchostopenrequestdraftpayload"
+          },
+          {
+            "text": "hc.host.loadRequest(requestId)",
+            "link": "/renderer-overview#hchostloadrequestrequestid"
+          }
+        ],
+        "collapsed": false
+      },
+      {
         "text": "Related reference",
         "link": "/renderer-overview#related-reference"
       }
@@ -310,6 +347,18 @@ export const sidebar: DefaultTheme.SidebarItem[] =
           }
         ],
         "collapsed": false
+      },
+      {
+        "text": "hc.http",
+        "link": "/renderer-data#hchttp"
+      },
+      {
+        "text": "hc.ipc",
+        "link": "/renderer-data#hcipc"
+      },
+      {
+        "text": "hc.host",
+        "link": "/renderer-data#hchost"
       },
       {
         "text": "hc.subscriptions",

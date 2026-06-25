@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Add renderer `hc.http.onAfterSend`, `hc.ipc.invoke`, and `hc.host` (`openRequestDraft`, `loadRequest`) to `PluginContext`.
+- Add `OpenRequestDraftPayload`, `OpenRequestDraftParam`, `PluginRendererHttp`, `PluginIpcInvoker`, and `PluginHost` types.
+- Extend `PluginHttpRequest` with `bodyType`, `params`, `sourceRequestId`, and `sourceRequestName`.
+
 ## 0.2.3 - 2026-06-24
 
 - Add React/JSX runtime (`installReact`, `createPluginComponent`, `@harborclient/plugin-api/react`, `@harborclient/plugin-api/jsx-runtime`).

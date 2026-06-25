@@ -195,7 +195,58 @@ export interface PluginContext {
   commands: PluginCommands;
   storage: PluginStorage;
   fs: PluginFs;
+  http: PluginRendererHttp;
+  ipc: PluginIpcInvoker;
+  host: PluginHost;
   subscriptions: Disposable[];
+}
+
+export interface PluginRendererHttp {
+  onAfterSend(
+    handler: (request: PluginHttpRequest, response: PluginHttpResponse) => void | Promise<void>
+  ): Disposable;
+}
+
+export interface PluginIpcInvoker {
+  invoke<T>(channel: string, ...args: unknown[]): Promise<T>;
+}
+
+export interface OpenRequestDraftParam {
+  key: string;
+  value: string;
+}
+
+export interface OpenRequestDraftPayload {
+  name?: string;
+  method?: string;
+  url?: string;
+  headers?: Record<string, string>;
+  params?: OpenRequestDraftParam[];
+  body?: string;
+  bodyType?: BodyType;
+}
+
+export interface PluginHost {
+  openRequestDraft(payload: OpenRequestDraftPayload): Promise<void>;
+  loadRequest(requestId: number): Promise<void>;
+}
+
+export interface PluginHttpRequest {
+  method: string;
+  url: string;
+  headers: Record<string, string>;
+  body: string;
+  bodyType?: string;
+  params?: Array<{ key: string; value: string }>;
+  sourceRequestId?: number;
+  sourceRequestName?: string;
+}
+
+export interface PluginHttpResponse {
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+  body: string;
 }
 ```
 
@@ -272,6 +323,76 @@ export function activate(hc: PluginContext): void {
 ```
 
 See [harborclient-plugin-skeleton](https://github.com/harborclient/plugin-skeleton) for a complete starter project with renderer and main entries.
+
+## hc.http
+
+Renderer-side HTTP lifecycle events for reacting to completed sends in the UI. Requires the `http` permission. Push returned disposables onto `hc.subscriptions`.
+
+Prefer `hc.http.onAfterSend` over a main entry + custom IPC + polling when you only need to capture completed requests in the renderer (for example history or recent-requests panels).
+
+### hc.http.onAfterSend(handler)
+
+**Signature:** `(handler: (request, response) => void | Promise<void>) => Disposable`
+
+Fires after each successful send in the renderer. The `request` payload matches main-process hooks (`PluginHttpRequest`); the `response` payload is `PluginHttpResponse`.
+
+```typescript
+hc.subscriptions.push(
+  hc.http.onAfterSend(async (request, response) => {
+    console.log(request.method, request.url, response.status);
+  })
+);
+```
+
+For mutating outgoing requests before they are sent, use a main entry with `hc.http.onBeforeSend` instead — see [Main API](/main-api).
+
+## hc.ipc
+
+Renderer-side RPC into the plugin's main entry. Requires the `ipc` permission. The host auto-reactivates the main runtime when it has been torn down.
+
+### hc.ipc.invoke(channel, ...args)
+
+**Signature:** `<T>(channel: string, ...args: unknown[]) => Promise<T>`
+
+Invokes a handler registered with `hc.ipc.handle` in the main entry. Use `hc.pluginId` for logging — channel names are automatically scoped to your plugin.
+
+```typescript
+const pending = await hc.ipc.invoke<Array<{ id: string }>>('pullPending');
+```
+
+Do not call `window.api.invokePluginMain` directly — use this typed API instead.
+
+## hc.host
+
+Typed wrappers for built-in HarborClient request editor commands. Requires the `ui` permission. Prefer these over stringly-typed `hc.commands.execute('harborclient:…')`.
+
+### hc.host.openRequestDraft(payload)
+
+**Signature:** `(payload: OpenRequestDraftPayload) => Promise<void>`
+
+Opens a new request tab seeded with captured send metadata.
+
+```typescript
+await hc.host.openRequestDraft({
+  name: 'Recent GET',
+  method: request.method,
+  url: request.url,
+  headers: request.headers,
+  params: request.params,
+  body: request.body,
+  bodyType: request.bodyType as BodyType | undefined
+});
+```
+
+### hc.host.loadRequest(requestId)
+
+**Signature:** `(requestId: number) => Promise<void>`
+
+Opens a saved collection request or focuses an existing tab for it.
+
+```typescript
+await hc.host.loadRequest(42);
+```
 
 ## Related reference
 

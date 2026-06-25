@@ -185,6 +185,24 @@ Reads a UTF-8 text file from an allowlisted path. Requires the `filesystem:read`
 
 Writes UTF-8 text to an allowlisted path. Requires the `filesystem:write` permission.
 
+## hc.http
+
+Renderer-side HTTP lifecycle events. See [Renderer API](/renderer-overview) for full documentation.
+
+Requires the `http` permission. Use `hc.http.onAfterSend` when you only need to react to completed sends in the UI — no main entry or polling required.
+
+## hc.ipc
+
+Renderer-side RPC into the plugin main entry. See [Renderer API](/renderer-overview).
+
+Requires the `ipc` permission. Call `hc.ipc.invoke(channel, ...args)` instead of `window.api.invokePluginMain`.
+
+## hc.host
+
+Typed wrappers for built-in request editor commands. See [Renderer API](/renderer-overview).
+
+Requires the `ui` permission. Use `hc.host.openRequestDraft` and `hc.host.loadRequest` instead of `hc.commands.execute('harborclient:…')`.
+
 ## hc.subscriptions
 
 **Type:** `Disposable[]`

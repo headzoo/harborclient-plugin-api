@@ -985,6 +985,127 @@ export interface PluginUi {
 }
 
 // ---------------------------------------------------------------------------
+// Host request commands
+// ---------------------------------------------------------------------------
+
+/**
+ * Serializable query parameter captured from a sent request.
+ */
+export interface OpenRequestDraftParam {
+  /**
+   * Query parameter name.
+   */
+  key: string;
+
+  /**
+   * Query parameter value after variable substitution.
+   */
+  value: string;
+}
+
+/**
+ * Serializable request draft payload passed to {@link PluginHost.openRequestDraft}.
+ *
+ * Opens a new request editor tab seeded with captured send metadata.
+ */
+export interface OpenRequestDraftPayload {
+  /**
+   * Tab title for the new draft. Defaults to "Recent Request" when omitted.
+   */
+  name?: string;
+
+  /**
+   * HTTP method (for example `GET`, `POST`).
+   */
+  method?: string;
+
+  /**
+   * Request URL including scheme, host, path, and query string.
+   */
+  url?: string;
+
+  /**
+   * Outgoing request headers as a flat key/value map.
+   */
+  headers?: Record<string, string>;
+
+  /**
+   * Enabled query parameters from the sent request.
+   */
+  params?: OpenRequestDraftParam[];
+
+  /**
+   * Request body content as a string.
+   */
+  body?: string;
+
+  /**
+   * Request body encoding. Defaults to `text` when body is non-empty, otherwise `none`.
+   */
+  bodyType?: BodyType;
+}
+
+/**
+ * Renderer-side HTTP lifecycle events for reacting to completed sends in the UI.
+ *
+ * Requires the `http` permission. Push returned disposables onto
+ * {@link PluginContext.subscriptions}.
+ */
+export interface PluginRendererHttp {
+  /**
+   * Registers a callback that runs after a request completes in the renderer.
+   *
+   * Fires for every successful send in the active renderer window — no main entry,
+   * custom IPC channel, or polling required.
+   *
+   * @param handler - Called with the sent request snapshot and response payload.
+   * @returns A {@link Disposable} that unregisters the handler when disposed.
+   */
+  onAfterSend(
+    handler: (request: PluginHttpRequest, response: PluginHttpResponse) => void | Promise<void>
+  ): Disposable;
+}
+
+/**
+ * Renderer-side RPC into the plugin's main entry.
+ *
+ * Mirrors {@link PluginIpc.handle} on the main side. Requires the `ipc` permission.
+ * The host auto-reactivates the main runtime when it has been torn down.
+ */
+export interface PluginIpcInvoker {
+  /**
+   * Invokes a handler registered with {@link PluginIpc.handle} in the main entry.
+   *
+   * @param channel - Channel name unique within this plugin.
+   * @param args - Arguments forwarded to the main handler.
+   * @returns The handler return value.
+   */
+  invoke<T>(channel: string, ...args: unknown[]): Promise<T>;
+}
+
+/**
+ * Typed wrappers for built-in HarborClient request editor commands.
+ *
+ * Requires the `ui` permission. Prefer these over stringly-typed
+ * {@link PluginCommands.execute} for opening request tabs.
+ */
+export interface PluginHost {
+  /**
+   * Opens a new request tab seeded with captured send metadata.
+   *
+   * @param payload - Partial draft fields from a recent request entry.
+   */
+  openRequestDraft(payload: OpenRequestDraftPayload): Promise<void>;
+
+  /**
+   * Opens a saved collection request or focuses an existing tab for it.
+   *
+   * @param requestId - Saved request database id.
+   */
+  loadRequest(requestId: number): Promise<void>;
+}
+
+// ---------------------------------------------------------------------------
 // Plugin context (hc)
 // ---------------------------------------------------------------------------
 
@@ -1037,6 +1158,21 @@ export interface PluginContext {
   fs: PluginFs;
 
   /**
+   * Renderer-side HTTP lifecycle events. Requires the `http` permission.
+   */
+  http: PluginRendererHttp;
+
+  /**
+   * Renderer-side RPC into the plugin main entry. Requires the `ipc` permission.
+   */
+  ipc: PluginIpcInvoker;
+
+  /**
+   * Typed wrappers for built-in request editor commands. Requires the `ui` permission.
+   */
+  host: PluginHost;
+
+  /**
    * Disposables to clean up on deactivation.
    *
    * Push every disposable returned by registration APIs here. The host disposes all
@@ -1075,6 +1211,26 @@ export interface PluginHttpRequest {
    * Request body content as a string.
    */
   body: string;
+
+  /**
+   * Request body content type when captured from the send pipeline.
+   */
+  bodyType?: string;
+
+  /**
+   * Enabled query parameters from the outgoing request.
+   */
+  params?: Array<{ key: string; value: string }>;
+
+  /**
+   * Saved collection request id when the send originated from a saved request tab.
+   */
+  sourceRequestId?: number;
+
+  /**
+   * Display name from the request tab when {@link sourceRequestId} is set.
+   */
+  sourceRequestName?: string;
 }
 
 /**
