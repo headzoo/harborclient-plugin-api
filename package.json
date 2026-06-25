@@ -1,6 +1,6 @@
 {
   "name": "@harborclient/plugin-api",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "TypeScript SDK for HarborClient plugin development.",
   "keywords": [
     "harborclient",
