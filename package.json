@@ -1,5 +1,5 @@
 {
-  "name": "@harborclient/plugin-api",
+  "name": "@harborclient/sdk",
   "version": "0.4.2",
   "description": "TypeScript SDK for HarborClient plugin development.",
   "keywords": [
@@ -8,13 +8,13 @@
     "typescript",
     "types"
   ],
-  "homepage": "https://github.com/harborclient/plugin-api",
+  "homepage": "https://github.com/harborclient/sdk",
   "bugs": {
-    "url": "https://github.com/harborclient/plugin-api/issues"
+    "url": "https://github.com/harborclient/sdk/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/harborclient/plugin-api.git"
+    "url": "git+https://github.com/harborclient/sdk.git"
   },
   "license": "MIT",
   "author": {

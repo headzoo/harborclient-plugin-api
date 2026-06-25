@@ -6,7 +6,7 @@ To install or manage plugins in the app, see [Settings → Plugins](https://harb
 
 ## Guide
 
-- [Install](/install) — add `@harborclient/plugin-api` to your plugin project
+- [Install](/install) — add `@harborclient/sdk` to your plugin project
 - [Quick start](/usage) — minimal renderer and main entry examples
 - [Package layout](/package-layout) — directory structure for a `.hcp` package
 - [Manifest](/manifest) — `manifest.json` fields, metadata, and contribution types

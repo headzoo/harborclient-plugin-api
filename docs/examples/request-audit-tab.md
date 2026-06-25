@@ -21,8 +21,8 @@ This example adds a read-only **Audit** tab to the request editor. It summarizes
 ## src/renderer.tsx
 
 ```tsx
-import { installReact } from '@harborclient/plugin-api';
-import type { PluginContext, RequestTabContext } from '@harborclient/plugin-api';
+import { installReact } from '@harborclient/sdk';
+import type { PluginContext, RequestTabContext } from '@harborclient/sdk';
 
 function AuditTab({ context }: { context: RequestTabContext }) {
   const { draft, response } = context;

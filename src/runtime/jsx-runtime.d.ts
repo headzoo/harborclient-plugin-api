@@ -6,7 +6,7 @@ import type * as React from 'react';
 export declare const Fragment: unique symbol;
 
 /**
- * Automatic JSX runtime entry used when `jsxImportSource` is `@harborclient/plugin-api`.
+ * Automatic JSX runtime entry used when `jsxImportSource` is `@harborclient/sdk`.
  */
 export function jsx(
   type: React.ElementType,
@@ -24,12 +24,12 @@ export function jsxs(
 ): React.ReactElement;
 
 export namespace JSX {
-  interface Element extends React.JSX.Element {}
-  interface ElementClass extends React.JSX.ElementClass {}
-  interface ElementAttributesProperty extends React.JSX.ElementAttributesProperty {}
-  interface ElementChildrenAttribute extends React.JSX.ElementChildrenAttribute {}
+  interface Element extends React.JSX.Element { }
+  interface ElementClass extends React.JSX.ElementClass { }
+  interface ElementAttributesProperty extends React.JSX.ElementAttributesProperty { }
+  interface ElementChildrenAttribute extends React.JSX.ElementChildrenAttribute { }
   type LibraryManagedAttributes<C, P> = React.JSX.LibraryManagedAttributes<C, P>;
-  interface IntrinsicAttributes extends React.JSX.IntrinsicAttributes {}
-  interface IntrinsicClassAttributes<T> extends React.JSX.IntrinsicClassAttributes<T> {}
-  interface IntrinsicElements extends React.JSX.IntrinsicElements {}
+  interface IntrinsicAttributes extends React.JSX.IntrinsicAttributes { }
+  interface IntrinsicClassAttributes<T> extends React.JSX.IntrinsicClassAttributes<T> { }
+  interface IntrinsicElements extends React.JSX.IntrinsicElements { }
 }

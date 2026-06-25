@@ -5,7 +5,7 @@
  */
 
 /** @type {string} Public GitHub repository URL (no trailing slash). */
-export const repoUrl = 'https://github.com/harborclient/plugin-api';
+export const repoUrl = 'https://github.com/harborclient/sdk';
 
 /** @type {string} Default git branch for blob links. */
 export const defaultBranch = 'main';

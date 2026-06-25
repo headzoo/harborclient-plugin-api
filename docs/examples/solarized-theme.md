@@ -21,7 +21,7 @@ This example registers a **Solarized Dark** appearance theme. The user selects i
 ## src/renderer.tsx
 
 ```tsx
-import type { PluginContext } from '@harborclient/plugin-api';
+import type { PluginContext } from '@harborclient/sdk';
 
 export function activate(hc: PluginContext): void {
   hc.subscriptions.push(

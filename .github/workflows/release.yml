@@ -1,6 +1,6 @@
 name: Release
 
-# Release workflow for @harborclient/plugin-api. Bumps the `version` field in
+# Release workflow for @harborclient/sdk. Bumps the `version` field in
 # package.json, renames `## Unreleased` in CHANGELOG.md to the new version,
 # commits + tags + pushes back to `main`, and publishes to npm.
 #
@@ -8,7 +8,7 @@ name: Release
 #
 #   1. Repository secret `NPM_TOKEN`: an npm automation token (or a granular
 #      token configured to bypass 2FA prompts) with publish rights to
-#      @harborclient/plugin-api.
+#      @harborclient/sdk.
 #
 #   2. Branch protection on `main` must allow github-actions[bot] to push.
 

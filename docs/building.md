@@ -20,7 +20,7 @@ You can also build `request-logger.zip` and rename it to `request-logger.hcp`; H
   "name": "request-logger",
   "private": true,
   "devDependencies": {
-    "@harborclient/plugin-api": "^0.2.0",
+    "@harborclient/sdk": "^0.2.0",
     "@types/react": "^19.0.0",
     "esbuild": "^0.25.0",
     "typescript": "^5.0.0"
@@ -32,7 +32,7 @@ You can also build `request-logger.zip` and rename it to `request-logger.hcp`; H
 }
 ```
 
-For renderer plugins, mark `react` and `react-dom` as **external**, set `--jsx=automatic --jsx-import-source=@harborclient/plugin-api`, and call `installReact(hc.react)` at the start of `activate()`. See [React and JSX](/renderer-overview#react-and-jsx).
+For renderer plugins, mark `react` and `react-dom` as **external**, set `--jsx=automatic --jsx-import-source=@harborclient/sdk`, and call `installReact(hc.react)` at the start of `activate()`. See [React and JSX](/renderer-overview#react-and-jsx).
 
 ## Sign your plugin
 
@@ -40,7 +40,7 @@ After building entry files, sign the plugin directory with an Ed25519 key so use
 
 ## TypeScript
 
-Use `jsx: react-jsx` with `jsxImportSource: '@harborclient/plugin-api'` and import types from `@harborclient/plugin-api`. Your entry module should export `activate` and optionally `deactivate` as named exports.
+Use `jsx: react-jsx` with `jsxImportSource: '@harborclient/sdk'` and import types from `@harborclient/sdk`. Your entry module should export `activate` and optionally `deactivate` as named exports.
 
 ## Main entry
 

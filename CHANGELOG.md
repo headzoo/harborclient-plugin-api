@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Rename npm package from `@harborclient/plugin-api` to `@harborclient/sdk`.
+- Move documentation site from `harborclient.github.io/plugin-api/` to `harborclient.github.io/sdk/`.
+- **Breaking:** Plugin authors must update imports, `jsxImportSource`, and esbuild `--jsx-import-source` to `@harborclient/sdk`, then rebuild plugin bundles.
+
 ## 0.4.0 - 2026-06-25
 
-- Add `@harborclient/plugin-api/signing` with `signPlugin`, `verifyPlugin`, and CLI tools (`hc-plugin-sign`, `hc-plugin-verify`).
+- Add `@harborclient/sdk/signing` with `signPlugin`, `verifyPlugin`, and CLI tools (`hc-plugin-sign`, `hc-plugin-verify`).
 
 ## 0.3.3 - 2026-06-25
 
@@ -25,7 +29,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.2.5 - 2026-06-24
 
-- Add React/JSX runtime (`installReact`, `createPluginComponent`, `@harborclient/plugin-api/react`, `@harborclient/plugin-api/jsx-runtime`).
+- Add React/JSX runtime (`installReact`, `createPluginComponent`, `@harborclient/sdk/react`, `@harborclient/sdk/jsx-runtime`).
 - Add `pluginId` to `PluginContext`.
 
 ## 0.2.1 - 2026-06-24
@@ -40,7 +44,7 @@ All notable changes to this project will be documented in this file.
 
 ## 0.1.2 - 2026-06-24
 
-- Add main-process types (`MainPluginContext`, `PluginHttp`, `PluginIpc`, `PluginHttpRequest`, `PluginHttpResponse`) and `@harborclient/plugin-api/main` subpath export.
+- Add main-process types (`MainPluginContext`, `PluginHttp`, `PluginIpc`, `PluginHttpRequest`, `PluginHttpResponse`) and `@harborclient/sdk/main` subpath export.
 - Add renderer `PluginFs` types and `fs` on `PluginContext`.
 
 ## 0.1.1 - 2026-06-24

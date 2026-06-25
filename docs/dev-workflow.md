@@ -10,14 +10,14 @@ Create a plugin project folder with `manifest.json` at the root (see [Manifest](
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@harborclient/plugin-api": "^0.2.0",
+    "@harborclient/sdk": "^0.2.0",
     "@types/react": "^19.0.0",
     "esbuild": "^0.25.0",
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build": "esbuild src/renderer.tsx --bundle --outfile=dist/renderer.js --format=esm --jsx=automatic --jsx-import-source=@harborclient/plugin-api --external:react --external:react-dom",
-    "dev": "esbuild src/renderer.tsx --bundle --outfile=dist/renderer.js --format=esm --jsx=automatic --jsx-import-source=@harborclient/plugin-api --external:react --external:react-dom --watch",
+    "build": "esbuild src/renderer.tsx --bundle --outfile=dist/renderer.js --format=esm --jsx=automatic --jsx-import-source=@harborclient/sdk --external:react --external:react-dom",
+    "dev": "esbuild src/renderer.tsx --bundle --outfile=dist/renderer.js --format=esm --jsx=automatic --jsx-import-source=@harborclient/sdk --external:react --external:react-dom --watch",
     "pack": "pnpm build && zip -r ../my-plugin.hcp manifest.json README.md assets dist"
   }
 }

@@ -3,7 +3,7 @@ import { requireHostReact } from './reactHost.js';
 /**
  * Sentinel value compiled from JSX fragments; resolved to host React.Fragment at runtime.
  */
-export const Fragment = Symbol.for('@harborclient/plugin-api.Fragment');
+export const Fragment = Symbol.for('@harborclient/sdk.Fragment');
 
 /**
  * Builds a React element using the installed host React instance.

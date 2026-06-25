@@ -18,7 +18,7 @@ This example is a **main-only** plugin that logs every outbound HTTP request to 
 ## src/main.ts
 
 ```typescript
-import type { MainPluginContext } from '@harborclient/plugin-api';
+import type { MainPluginContext } from '@harborclient/sdk';
 
 export function activate(hc: MainPluginContext): void {
   hc.subscriptions.push(

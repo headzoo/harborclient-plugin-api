@@ -6,7 +6,7 @@ Authors listed in HarborClient's [trusted publisher registry](https://harborclie
 
 To discuss becoming a trusted publisher, email [contact@harborclient.com](mailto:contact@harborclient.com).
 
-The `@harborclient/plugin-api/signing` module provides programmatic signing and verification, plus CLI tools for release workflows.
+The `@harborclient/sdk/signing` module provides programmatic signing and verification, plus CLI tools for release workflows.
 
 ## Generate a key pair
 
@@ -57,11 +57,11 @@ Exit codes:
 
 ## Programmatic API
 
-Import from `@harborclient/plugin-api/signing`:
+Import from `@harborclient/sdk/signing`:
 
 ```typescript
 import { readFileSync } from 'node:fs';
-import { signPlugin, verifyPlugin } from '@harborclient/plugin-api/signing';
+import { signPlugin, verifyPlugin } from '@harborclient/sdk/signing';
 
 await signPlugin({
   pluginDir: './my-plugin',

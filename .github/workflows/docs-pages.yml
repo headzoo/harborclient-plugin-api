@@ -2,7 +2,7 @@ name: Docs Pages
 
 # Deploy the VitePress documentation site to GitHub Pages.
 #
-# Repository: https://github.com/harborclient/plugin-api
+# Repository: https://github.com/harborclient/sdk
 #
 # Automatically deploys when documentation changes land on main.
 # Manual dispatch remains available so docs can be published from any branch/ref
@@ -19,7 +19,7 @@ name: Docs Pages
 #     -f source_ref=main
 #
 # Deployed site entry point:
-#   https://harborclient.github.io/plugin-api/
+#   https://harborclient.github.io/sdk/
 
 on:
   push:

@@ -9,7 +9,7 @@ import { sidebar } from './sidebar.generated';
 const require = createRequire(import.meta.url);
 const dayjsDir = path.dirname(require.resolve('dayjs/package.json'));
 
-const siteBase = '/plugin-api/';
+const siteBase = '/sdk/';
 
 const withSiteBase = (path: string) => {
   if (!path.startsWith('/') || path.startsWith(siteBase) || path.startsWith('//')) {
@@ -21,7 +21,7 @@ const withSiteBase = (path: string) => {
 
 export default withMermaid(
   defineConfig({
-    title: '@harborclient/plugin-api',
+    title: '@harborclient/sdk',
     description: 'TypeScript SDK and React runtime helpers for HarborClient plugin development.',
     base: siteBase,
     appearance: 'force-dark',
@@ -102,14 +102,14 @@ export default withMermaid(
       nav: [
         {
           text: `v${pkg.version}`,
-          link: 'https://github.com/harborclient/plugin-api/releases'
+          link: 'https://github.com/harborclient/sdk/releases'
         }
       ],
       socialLinks: [
         {
           icon: 'github',
-          link: 'https://github.com/harborclient/plugin-api',
-          ariaLabel: '@harborclient/plugin-api on GitHub'
+          link: 'https://github.com/harborclient/sdk',
+          ariaLabel: '@harborclient/sdk on GitHub'
         }
       ],
       sidebar,

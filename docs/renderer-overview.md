@@ -4,7 +4,7 @@ The renderer entry exports `activate(hc)` and optionally `deactivate()`. The `hc
 
 ```typescript
 import type * as React from 'react';
-import type { RequestDraft, HttpResponse } from '@harborclient/plugin-api';
+import type { RequestDraft, HttpResponse } from '@harborclient/sdk';
 
 export interface Disposable {
   dispose(): void;
@@ -250,7 +250,7 @@ export interface PluginHttpResponse {
 }
 ```
 
-Install `@harborclient/plugin-api` as a **dev dependency** in your plugin project for types and the JSX runtime helpers. The package tracks HarborClient releases. Type definitions are maintained in [harborclient/plugin-api](https://github.com/harborclient/plugin-api). Main entries use `MainPluginContext` instead — import it from `@harborclient/plugin-api` or `@harborclient/plugin-api/main` for main-only plugins.
+Install `@harborclient/sdk` as a **dev dependency** in your plugin project for types and the JSX runtime helpers. The package tracks HarborClient releases. Type definitions are maintained in [harborclient/sdk](https://github.com/harborclient/sdk). Main entries use `MainPluginContext` instead — import it from `@harborclient/sdk` or `@harborclient/sdk/main` for main-only plugins.
 
 ## hc.pluginId
 
@@ -266,7 +266,7 @@ The same React instance HarborClient uses in the renderer. Do not import or bund
 
 ## React and JSX
 
-Plugins must share the host React instance. `@harborclient/plugin-api` ships a small JSX runtime and hook barrel that forwards to `hc.react` after you call `installReact(hc.react)` at the start of `activate()`.
+Plugins must share the host React instance. `@harborclient/sdk` ships a small JSX runtime and hook barrel that forwards to `hc.react` after you call `installReact(hc.react)` at the start of `activate()`.
 
 **TypeScript** (`tsconfig.json`):
 
@@ -274,7 +274,7 @@ Plugins must share the host React instance. `@harborclient/plugin-api` ships a s
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@harborclient/plugin-api"
+    "jsxImportSource": "@harborclient/sdk"
   }
 }
 ```
@@ -284,15 +284,15 @@ Plugins must share the host React instance. `@harborclient/plugin-api` ships a s
 ```bash
 esbuild src/renderer.tsx \
   --bundle --outfile=dist/renderer.js --format=esm \
-  --jsx=automatic --jsx-import-source=@harborclient/plugin-api \
+  --jsx=automatic --jsx-import-source=@harborclient/sdk \
   --external:react --external:react-dom
 ```
 
 **Renderer entry:**
 
 ```tsx
-import { installReact } from '@harborclient/plugin-api';
-import type { PluginContext } from '@harborclient/plugin-api';
+import { installReact } from '@harborclient/sdk';
+import type { PluginContext } from '@harborclient/sdk';
 
 export function activate(hc: PluginContext): void {
   installReact(hc.react);
@@ -300,16 +300,16 @@ export function activate(hc: PluginContext): void {
 }
 ```
 
-**Hooks in components** — import from `@harborclient/plugin-api/react` (not from `react`):
+**Hooks in components** — import from `@harborclient/sdk/react` (not from `react`):
 
 ```tsx
-import { useState, useEffect } from '@harborclient/plugin-api/react';
+import { useState, useEffect } from '@harborclient/sdk/react';
 ```
 
 **Single-file escape hatch** — `createPluginComponent` builds a component from a factory that receives host React:
 
 ```tsx
-import { installReact, createPluginComponent } from '@harborclient/plugin-api';
+import { installReact, createPluginComponent } from '@harborclient/sdk';
 
 export function activate(hc: PluginContext): void {
   installReact(hc.react);

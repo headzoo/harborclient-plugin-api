@@ -2,7 +2,7 @@
 
 Optional `main` entry modules export `activate(hc)` and `deactivate()` like renderer entries, but run inside the SES-hardened utilityProcess. Use this entry for HTTP hooks and custom IPC — not for React UI.
 
-Import `MainPluginContext` from `@harborclient/plugin-api` (or `@harborclient/plugin-api/main` for main-only plugins) and type your entry as `activate(hc: MainPluginContext)`.
+Import `MainPluginContext` from `@harborclient/sdk` (or `@harborclient/sdk/main` for main-only plugins) and type your entry as `activate(hc: MainPluginContext)`.
 
 See [Architecture](/architecture#two-runtimes) for how the main entry fits alongside the renderer entry.
 
@@ -17,7 +17,7 @@ Same namespaced `get` / `set` API as the renderer. Requires the `storage` permis
 Register a callback that runs before each outgoing HTTP request. Mutate the request object to change method, URL, headers, or body. Requires the `http` permission. Remove a header with `delete request.headers['Header-Name']`.
 
 ```typescript
-import type { MainPluginContext } from '@harborclient/plugin-api';
+import type { MainPluginContext } from '@harborclient/sdk';
 
 export function activate(hc: MainPluginContext): void {
   hc.subscriptions.push(

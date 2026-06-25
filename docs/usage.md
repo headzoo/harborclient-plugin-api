@@ -1,12 +1,12 @@
 # Quick start
 
-Install `@harborclient/plugin-api` first — see [Install](/install).
+Install `@harborclient/sdk` first — see [Install](/install).
 
 ## Renderer entry
 
 ```tsx
-import { installReact } from '@harborclient/plugin-api';
-import type { PluginContext } from '@harborclient/plugin-api';
+import { installReact } from '@harborclient/sdk';
+import type { PluginContext } from '@harborclient/sdk';
 
 export function activate(hc: PluginContext): void {
   installReact(hc.react);
@@ -23,10 +23,10 @@ Do not bundle `react` / `react-dom` in your plugin bundle. For JSX setup, esbuil
 
 ## Main entry
 
-Main entries run in the SES utilityProcess for HTTP hooks and custom IPC — not for React UI. Import `MainPluginContext` from `@harborclient/plugin-api/main`:
+Main entries run in the SES utilityProcess for HTTP hooks and custom IPC — not for React UI. Import `MainPluginContext` from `@harborclient/sdk/main`:
 
 ```typescript
-import type { MainPluginContext } from '@harborclient/plugin-api/main';
+import type { MainPluginContext } from '@harborclient/sdk/main';
 
 export function activate(hc: MainPluginContext): void {
   hc.subscriptions.push(
@@ -41,13 +41,13 @@ See [Main API](/main-api) for HTTP hooks and IPC, and [Building](/building) to p
 
 ## Utility imports
 
-Shared helpers ship as subpath exports (requires `@harborclient/plugin-api` **0.3.1+**):
+Shared helpers ship as subpath exports (requires `@harborclient/sdk` **0.3.1+**):
 
 ```typescript
-import { resolveRequest } from '@harborclient/plugin-api/http';
-import { methodColorClass, formatRelativeTime } from '@harborclient/plugin-api/ui';
-import { mergeById, createCappedList } from '@harborclient/plugin-api/storage';
-import { copyToClipboard } from '@harborclient/plugin-api/clipboard';
-import { randomId, truncateBody } from '@harborclient/plugin-api/runtime-utils';
-import { createExternalStore } from '@harborclient/plugin-api/store';
+import { resolveRequest } from '@harborclient/sdk/http';
+import { methodColorClass, formatRelativeTime } from '@harborclient/sdk/ui';
+import { mergeById, createCappedList } from '@harborclient/sdk/storage';
+import { copyToClipboard } from '@harborclient/sdk/clipboard';
+import { randomId, truncateBody } from '@harborclient/sdk/runtime-utils';
+import { createExternalStore } from '@harborclient/sdk/store';
 ```
