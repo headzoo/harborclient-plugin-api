@@ -78,8 +78,8 @@ export const sidebar: DefaultTheme.SidebarItem[] =
             "link": "/manifest#screenshots"
           },
           {
-            "text": "company, homepage, and bugs",
-            "link": "/manifest#company-homepage-and-bugs"
+            "text": "author, homepage, and bugs",
+            "link": "/manifest#author-homepage-and-bugs"
           }
         ],
         "collapsed": false

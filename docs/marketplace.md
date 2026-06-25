@@ -16,7 +16,7 @@ HarborClient maintains a curated [plugin marketplace](https://harborclient.com/p
 | `name`          | Yes      | Display name shown in the marketplace.                                                    |
 | `version`       | Yes      | Semver version string (must match the tagged release in `ref` when set).                  |
 | `summary`       | Yes      | Short one-line description for list views.                                                |
-| `author`        | Yes      | Publisher or company name.                                                                |
+| `author`        | Yes      | Publisher or author name.                                                                 |
 | `categories`    | Yes      | One or more category labels (for example `themes`, `integrations`).                       |
 | `repoUrl`       | Yes      | Public GitHub repository URL (`https://github.com/owner/repo`).                           |
 | `ref`           | No       | Branch or tag to clone (for example `v1.0.0`). Omit to use the repository default branch. |

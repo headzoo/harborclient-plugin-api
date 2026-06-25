@@ -8,7 +8,7 @@ Every plugin requires a manifest at the root of the `.hcp` archive. The example 
   "name": "My Plugin",
   "version": "1.0.0",
 
-  "company": "Example Inc.",
+  "author": "Example Inc.",
   "description": "README.md",
   "icon": "assets/icon.png",
   "screenshots": [
@@ -63,7 +63,7 @@ Every plugin requires a manifest at the root of the `.hcp` archive. The example 
 | `id`                   | Yes      | Reverse-DNS identifier. Namespaces storage and plugin updates.                                                                      |
 | `name`                 | Yes      | Display name shown in Settings and install dialogs.                                                                                 |
 | `version`              | Yes      | Semver version string.                                                                                                              |
-| `company`              | No       | Publisher or company name shown on the plugin detail page.                                                                          |
+| `author`               | No       | Publisher or author name shown on the plugin detail page.                                                                           |
 | `description`          | No       | Path to a Markdown file (for example `README.md`) with the full plugin description. Rendered in **Settings → Plugins** detail view. |
 | `icon`                 | No       | Path to a square PNG or SVG icon (recommended 128×128 px or larger). Shown in the plugin list and install dialog.                   |
 | `screenshots`          | No       | Gallery images for the plugin detail page. See [Screenshots](#screenshots) below.                                                   |
@@ -116,11 +116,11 @@ Supported formats: PNG, JPEG, WebP. Recommended width **1280 px** or wider; Harb
 ]
 ```
 
-### company, homepage, and bugs
+### author, homepage, and bugs
 
 | Field      | Example                                         | Shown in UI                   |
 | ---------- | ----------------------------------------------- | ----------------------------- |
-| `company`  | `"Acme HTTP Tools"`                             | Publisher line on detail page |
+| `author`   | `"Acme HTTP Tools"`                             | Publisher line on detail page |
 | `homepage` | `"https://example.com/my-plugin"`               | **Website** link              |
 | `bugs.url` | `"https://github.com/example/my-plugin/issues"` | **Report issue** link         |
 

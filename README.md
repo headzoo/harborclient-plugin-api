@@ -30,6 +30,12 @@ export function activate(hc: PluginContext): void {
 
 Full guides — package layout, manifest, APIs, examples, and dev workflow — live in the [plugin development docs](https://harborclient.github.io/plugin-api/).
 
+## Trusted publishers
+
+HarborClient maintains a [trusted publisher registry](https://harborclient.com/plugins/trusted.json). Authors listed there must sign every plugin they publish; HarborClient rejects installs that claim a trusted author name without a valid signature. See the [signing guide](https://harborclient.github.io/plugin-api/signing) for key generation and verification.
+
+To discuss becoming a trusted publisher, email [contact@harborclient.com](mailto:contact@harborclient.com).
+
 ## License
 
 MIT

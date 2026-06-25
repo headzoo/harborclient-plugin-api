@@ -1,6 +1,10 @@
 # Plugin signing
 
-HarborClient plugins can be signed with an Ed25519 key so installers can verify that plugin files match a publisher's signature. Signing is optional for third-party plugins; unsigned plugins may show a warning when enabled in a future HarborClient release.
+HarborClient plugins can be signed with an Ed25519 key so installers can verify that plugin files match a publisher's signature. Signing is optional for third-party plugins; unsigned plugins may show a warning when enabled in HarborClient.
+
+Authors listed in HarborClient's [trusted publisher registry](https://harborclient.com/plugins/trusted.json) must sign every plugin they publish. HarborClient rejects installs that claim a trusted author name without a valid signature.
+
+To discuss becoming a trusted publisher, email [contact@harborclient.com](mailto:contact@harborclient.com).
 
 The `@harborclient/plugin-api/signing` module provides programmatic signing and verification, plus CLI tools for release workflows.
 
@@ -102,4 +106,4 @@ The signed payload includes `schemaVersion`, `pluginId`, `pluginVersion`, `algor
 
 ## Marketplace plugins
 
-Official HarborClient plugins can commit `signature.json` alongside `manifest.json` in their GitHub repositories. HarborClient verifies signatures at install or enable time when runtime support is added; until then, use `pnpm plugin:verify` in CI to guard releases.
+Official HarborClient plugins can commit `signature.json` alongside `manifest.json` in their GitHub repositories. HarborClient verifies signatures at install time against the trusted publisher registry.
