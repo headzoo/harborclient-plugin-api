@@ -10,7 +10,22 @@ export const sidebar: DefaultTheme.SidebarItem[] =
   },
   {
     "text": "Install",
-    "link": "/install"
+    "link": "/install",
+    "items": [
+      {
+        "text": "Skeleton plugin",
+        "link": "/install#skeleton-plugin"
+      },
+      {
+        "text": "Development",
+        "link": "/install#development"
+      },
+      {
+        "text": "Building",
+        "link": "/install#building"
+      }
+    ],
+    "collapsed": false
   },
   {
     "text": "Quick start",
@@ -23,6 +38,10 @@ export const sidebar: DefaultTheme.SidebarItem[] =
       {
         "text": "Main entry",
         "link": "/usage#main-entry"
+      },
+      {
+        "text": "Utility imports",
+        "link": "/usage#utility-imports"
       }
     ],
     "collapsed": false
@@ -194,6 +213,10 @@ export const sidebar: DefaultTheme.SidebarItem[] =
           {
             "text": "hc.host.loadRequest(requestId)",
             "link": "/renderer-overview#hchostloadrequestrequestid"
+          },
+          {
+            "text": "hc.host.sendRequest()",
+            "link": "/renderer-overview#hchostsendrequest"
           }
         ],
         "collapsed": false

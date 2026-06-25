@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.3 - 2026-06-25
+
+- Add `hc.host.sendRequest()` to send the active request editor tab from plugins.
+
 ## 0.3.1 - 2026-06-24
 
 - Export utility subpaths: `./http`, `./ui`, `./storage`, `./clipboard`, `./runtime-utils`, and `./store`.

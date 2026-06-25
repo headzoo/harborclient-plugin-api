@@ -394,6 +394,16 @@ Opens a saved collection request or focuses an existing tab for it.
 await hc.host.loadRequest(42);
 ```
 
+### hc.host.sendRequest()
+
+**Signature:** `() => Promise<void>`
+
+Sends the active request editor tab using the same pipeline as the Send button. No-op when a send is already in flight for the active tab.
+
+```typescript
+await hc.host.sendRequest();
+```
+
 ## Related reference
 
 - [UI contributions](/renderer-ui) — `hc.ui.register*` methods

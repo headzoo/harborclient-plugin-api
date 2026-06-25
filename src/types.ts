@@ -1103,6 +1103,14 @@ export interface PluginHost {
    * @param requestId - Saved request database id.
    */
   loadRequest(requestId: number): Promise<void>;
+
+  /**
+   * Sends the active request editor tab using the same pipeline as the Send button
+   * (pre/post scripts, variable substitution, auth merge, and history).
+   *
+   * No-op when a send is already in flight for the active tab.
+   */
+  sendRequest(): Promise<void>;
 }
 
 // ---------------------------------------------------------------------------

@@ -201,7 +201,7 @@ Requires the `ipc` permission. Call `hc.ipc.invoke(channel, ...args)` instead of
 
 Typed wrappers for built-in request editor commands. See [Renderer API](/renderer-overview).
 
-Requires the `ui` permission. Use `hc.host.openRequestDraft` and `hc.host.loadRequest` instead of `hc.commands.execute('harborclient:…')`.
+Requires the `ui` permission. Use `hc.host.openRequestDraft`, `hc.host.loadRequest`, and `hc.host.sendRequest` instead of `hc.commands.execute('harborclient:…')`.
 
 ## hc.subscriptions
 
