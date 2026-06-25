@@ -1,7 +1,7 @@
 {
   "name": "@harborclient/plugin-api",
-  "version": "0.2.2",
-  "description": "TypeScript SDK for HarborClient plugin development.",
+  "version": "0.2.3",
+  "description": "TypeScript SDK and React runtime helpers for HarborClient plugin development.",
   "keywords": [
     "harborclient",
     "plugin",
@@ -21,11 +21,25 @@
     "name": "Harbor",
     "email": "harbor@example.com"
   },
+  "type": "module",
   "packageManager": "pnpm@10.17.1",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/client.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts"
+      "types": "./dist/client.d.ts",
+      "import": "./dist/runtime/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/runtime/jsx-runtime.d.ts",
+      "import": "./dist/runtime/jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/runtime/jsx-dev-runtime.d.ts",
+      "import": "./dist/runtime/jsx-dev-runtime.js"
+    },
+    "./react": {
+      "types": "./dist/runtime/react.d.ts",
+      "import": "./dist/runtime/react.js"
     },
     "./main": {
       "types": "./dist/main.d.ts"
@@ -41,7 +55,7 @@
     "react": ">=18"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/copy-runtime.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint --cache .",

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.2.3 - 2026-06-24
+
+- Add React/JSX runtime (`installReact`, `createPluginComponent`, `@harborclient/plugin-api/react`, `@harborclient/plugin-api/jsx-runtime`).
+- Add `pluginId` to `PluginContext`.
+
 ## 0.2.1 - 2026-06-24
 
 - Extend `RequestTabContext` with `variables` for merged collection and environment {{key}} substitution.

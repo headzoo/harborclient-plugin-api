@@ -630,32 +630,32 @@ export type BuiltinThemeId = 'light' | 'dark' | 'system' | 'high-contrast';
  */
 export type ActiveTheme =
   | {
-    /**
-     * Theme provided by HarborClient.
-     */
-    source: 'builtin';
+      /**
+       * Theme provided by HarborClient.
+       */
+      source: 'builtin';
 
-    /**
-     * Built-in theme id.
-     */
-    id: BuiltinThemeId;
-  }
+      /**
+       * Built-in theme id.
+       */
+      id: BuiltinThemeId;
+    }
   | {
-    /**
-     * Theme registered by a plugin via {@link PluginThemes.register}.
-     */
-    source: 'plugin';
+      /**
+       * Theme registered by a plugin via {@link PluginThemes.register}.
+       */
+      source: 'plugin';
 
-    /**
-     * Plugin package id from `manifest.json`.
-     */
-    pluginId: string;
+      /**
+       * Plugin package id from `manifest.json`.
+       */
+      pluginId: string;
 
-    /**
-     * Theme id from {@link ThemeContribution.id}.
-     */
-    themeId: string;
-  };
+      /**
+       * Theme id from {@link ThemeContribution.id}.
+       */
+      themeId: string;
+    };
 
 /**
  * Custom appearance theme registration and change notifications.
@@ -996,6 +996,13 @@ export interface PluginUi {
  * `react` / `react-dom` in your plugin bundle.
  */
 export interface PluginContext {
+  /**
+   * Plugin manifest id from `manifest.json`.
+   *
+   * Use for IPC routing and logging instead of hardcoding the manifest id in plugin code.
+   */
+  pluginId: string;
+
   /**
    * The same React instance HarborClient uses in the renderer.
    *
