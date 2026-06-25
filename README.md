@@ -1,75 +1,34 @@
 # @harborclient/plugin-api
 
-TypeScript definitions and React runtime helpers for [HarborClient](https://harborclient.com/) plugin development.
+**Full documentation:** [https://harborclient.github.io/plugin-api/](https://harborclient.github.io/plugin-api/)
 
-Install as a **dev dependency** in your plugin project. The package ships type declarations plus a small JSX runtime that forwards to the host's React instance via `installReact(hc.react)`.
+**TypeScript definitions and React runtime helpers for HarborClient plugin development.**
 
-## Install
+`@harborclient/plugin-api` is a dev dependency for HarborClient plugin authors:
 
-```bash
-pnpm add -D @harborclient/plugin-api
-```
+- **JSX runtime:** Forward to the host's React instance via `installReact(hc.react)` — do not bundle React in your plugin.
+- **Renderer types:** `PluginContext`, hooks from `@harborclient/plugin-api/react`, and esbuild/TypeScript JSX configuration.
+- **Main-process types:** `MainPluginContext` from `@harborclient/plugin-api/main` for HTTP hooks and custom IPC.
 
-Requires HarborClient **>=1.9.0** when using `hc.pluginId`.
+## Documentation
 
-## Usage
+| Topic | Link |
+| --- | --- |
+| Getting started | [Introduction](https://harborclient.github.io/plugin-api/) |
+| Installation | [Install](https://harborclient.github.io/plugin-api/install) |
+| Usage | [Usage](https://harborclient.github.io/plugin-api/usage) |
 
-### Renderer entry with JSX
+Canonical docs live in [`docs/`](./docs/). Edit those pages directly, then run `pnpm docs:build:nav` to refresh the VitePress sidebar.
 
-**TypeScript** (`tsconfig.json`):
-
-```json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@harborclient/plugin-api"
-  }
-}
-```
-
-**esbuild**:
+## Development
 
 ```bash
-esbuild src/renderer.tsx \
-  --bundle --outfile=dist/renderer.js --format=esm \
-  --jsx=automatic --jsx-import-source=@harborclient/plugin-api \
-  --external:react --external:react-dom
-```
-
-**Renderer entry**:
-
-```tsx
-import { installReact } from '@harborclient/plugin-api';
-import type { PluginContext } from '@harborclient/plugin-api';
-
-export function activate(hc: PluginContext): void {
-  installReact(hc.react);
-  // register contributions…
-}
-```
-
-**Hooks in components** — import from `@harborclient/plugin-api/react` (not from `react`):
-
-```tsx
-import { useState, useEffect } from '@harborclient/plugin-api/react';
-```
-
-Do not bundle `react` / `react-dom` in your plugin bundle.
-
-### Main entry
-
-Main entries run in the SES utilityProcess for HTTP hooks and custom IPC — not for React UI. Import `MainPluginContext` from `@harborclient/plugin-api/main`:
-
-```typescript
-import type { MainPluginContext } from '@harborclient/plugin-api/main';
-
-export function activate(hc: MainPluginContext): void {
-  hc.subscriptions.push(
-    hc.http.onBeforeSend((request) => {
-      request.headers['X-Trace'] = '1';
-    })
-  );
-}
+pnpm install
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm docs:serve    # VitePress dev server with nav watcher
+pnpm docs:build    # production docs build
 ```
 
 ## License
