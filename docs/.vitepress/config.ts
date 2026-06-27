@@ -2,6 +2,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { defineConfig } from 'vitepress';
 import { withMermaid } from 'vitepress-plugin-mermaid';
+import type { Plugin } from 'vite';
 import pkg from '../../package.json';
 import { toAnchor } from '../../scripts/docs-slugger.mjs';
 import { sidebar } from './sidebar.generated';
@@ -10,6 +11,26 @@ const require = createRequire(import.meta.url);
 const dayjsDir = path.dirname(require.resolve('dayjs/package.json'));
 
 const siteBase = '/sdk/';
+const storybookEntryPath = '/storybook/index.html';
+
+const storybookDevFallback = (base: string): Plugin => ({
+  name: 'vitepress-storybook-dev-fallback',
+  configureServer(server) {
+    const basePath = base.replace(/\/$/, '');
+    const storybookIndex = `${basePath}/storybook/index.html`;
+
+    server.middlewares.use((req, _res, next) => {
+      const pathname = req.url?.split('?')[0] ?? '';
+      const query = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+
+      if (pathname === `${basePath}/storybook` || pathname === `${basePath}/storybook/`) {
+        req.url = storybookIndex + query;
+      }
+
+      next();
+    });
+  }
+});
 
 const withSiteBase = (path: string) => {
   if (!path.startsWith('/') || path.startsWith(siteBase) || path.startsWith('//')) {
@@ -35,7 +56,8 @@ export default withMermaid(
         alias: {
           dayjs: `${dayjsDir}/`
         }
-      }
+      },
+      plugins: [storybookDevFallback(siteBase)]
     },
     head: [
       ['link', { rel: 'icon', href: withSiteBase('/images/favicon.ico') }],
@@ -66,7 +88,11 @@ export default withMermaid(
         }
       ]
     ],
-    ignoreDeadLinks: [/^https?:\/\/localhost(?::\d+)?(?:\/|$)/],
+    ignoreDeadLinks: [
+      /^https?:\/\/localhost(?::\d+)?(?:\/|$)/,
+      /^\/storybook\//,
+      /^\/sdk\/storybook\//
+    ],
     markdown: {
       anchor: {
         slugify: toAnchor
@@ -100,6 +126,10 @@ export default withMermaid(
     themeConfig: {
       logo: false,
       nav: [
+        {
+          text: 'Components',
+          link: storybookEntryPath
+        },
         {
           text: `v${pkg.version}`,
           link: 'https://github.com/harborclient/sdk/releases'

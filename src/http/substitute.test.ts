@@ -47,6 +47,16 @@ describe('substituteVariables', () => {
   it('returns text unchanged when there are no placeholders', () => {
     expect(substituteVariables('plain text', { host: 'https://example.com' })).toBe('plain text');
   });
+
+  it('resolves dynamic variables when not in the runtime map', () => {
+    const result = substituteVariables('prefix{{$timestamp}}suffix', {});
+    expect(result).not.toContain('{{');
+    expect(result).toMatch(/^prefix\d+suffix$/);
+  });
+
+  it('prefers runtime variables over dynamic variables', () => {
+    expect(substituteVariables('{{$timestamp}}', { $timestamp: 'fixed' })).toBe('fixed');
+  });
 });
 
 describe('resolveAuthVariables', () => {

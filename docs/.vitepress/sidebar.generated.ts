@@ -472,6 +472,10 @@ export const sidebar: DefaultTheme.SidebarItem[] =
         "link": "/main-api#hcipchandlechannel-handler"
       },
       {
+        "text": "hc.server",
+        "link": "/main-api#hcserver"
+      },
+      {
         "text": "hc.scripts",
         "link": "/main-api#hcscripts"
       }

@@ -1,7 +1,8 @@
 import { autocompletion, type CompletionSource } from '@codemirror/autocomplete';
 import { javascript } from '@codemirror/lang-javascript';
 import { json } from '@codemirror/lang-json';
-import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { HighlightStyle, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
+import { shell } from '@codemirror/legacy-modes/mode/shell';
 import {
   Decoration,
   EditorView,
@@ -26,7 +27,7 @@ import { getCodeEditorThemeExtension } from './themes.js';
 
 export { CODE_EDITOR_THEME_OPTIONS } from './themes.js';
 
-export type CodeEditorLanguage = 'json' | 'text' | 'javascript';
+export type CodeEditorLanguage = 'json' | 'text' | 'javascript' | 'shell';
 
 export interface Props {
   /**
@@ -371,6 +372,9 @@ export function CodeEditor({
           })
         );
       }
+    }
+    if (language === 'shell') {
+      next.push(StreamLanguage.define(shell));
     }
     if (variables) {
       next.push(variableHighlighter, variableTooltip(variables, onEditVariable));

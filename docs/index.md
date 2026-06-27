@@ -18,6 +18,7 @@ To install or manage plugins in the app, see [Settings → Plugins](https://harb
 - [UI contributions](/renderer-ui) — settings panels, tabs, menus, and toolbar actions
 - [Themes and storage](/renderer-data) — themes, commands, storage, and filesystem
 - [Main API](/main-api) — HTTP hooks and IPC in the SES utilityProcess
+- [Components](/storybook/index.html) — interactive component explorer (Storybook)
 - [Examples](/examples/) — request logger, audit tab, and Solarized theme
 - [Marketplace](/marketplace) — publish to the HarborClient plugin catalog
 - [Performance](/performance) — IPC and rendering best practices

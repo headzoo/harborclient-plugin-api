@@ -3,6 +3,17 @@ import DefaultTheme from 'vitepress/theme';
 import Layout from './Layout.vue';
 import './custom.css';
 
+const storybookHref = () => `${import.meta.env.BASE_URL}storybook/index.html`;
+
+const isStorybookPath = (href: string) => {
+  try {
+    const url = new URL(href, window.location.origin);
+    return /\/storybook(?:\/index\.html|\/?)$/.test(url.pathname);
+  } catch {
+    return false;
+  }
+};
+
 const syncDocImageLinks = () => {
   document.querySelectorAll<HTMLAnchorElement>('.vp-doc-image-link').forEach((link) => {
     const image = link.querySelector<HTMLImageElement>('img');
@@ -25,6 +36,17 @@ export default {
     }
 
     window.requestAnimationFrame(syncDocImageLinks);
+
+    const previousBeforeRouteChange = ctx.router.onBeforeRouteChange;
+
+    ctx.router.onBeforeRouteChange = async (href) => {
+      if (isStorybookPath(href)) {
+        window.location.assign(storybookHref());
+        return false;
+      }
+
+      return (await previousBeforeRouteChange?.(href)) ?? undefined;
+    };
 
     ctx.router.onAfterRouteChanged = () => {
       window.requestAnimationFrame(syncDocImageLinks);

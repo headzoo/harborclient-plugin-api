@@ -248,7 +248,7 @@ const verifyInternalLinks = (canonicalPages, routeAnchors) => {
     for (const match of page.markdown.matchAll(INTERNAL_LINK_PATTERN)) {
       const route = match[1];
 
-      if (route.startsWith('/images/')) {
+      if (route.startsWith('/images/') || route.startsWith('/storybook')) {
         continue;
       }
 

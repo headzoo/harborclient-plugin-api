@@ -27,7 +27,9 @@ on:
       - main
     paths:
       - README.md
+      - .storybook/**
       - docs/**
+      - src/**
       - scripts/build-docs-nav.mjs
       - scripts/docs-nav.config.mjs
       - scripts/docs-slugger.mjs

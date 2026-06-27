@@ -1,4 +1,5 @@
 import type { AuthConfig } from '../types.js';
+import { resolveDynamicVariable } from '../variables/dynamic.js';
 import { VARIABLE_TOKEN_PATTERN } from '../variables/tokens.js';
 
 type KeyValue = {
@@ -17,7 +18,11 @@ export function substituteVariables(text: string, runtimeVars: Record<string, st
   const pattern = new RegExp(VARIABLE_TOKEN_PATTERN.source, 'g');
   return text.replace(pattern, (match, key: string) => {
     const value = runtimeVars[key];
-    return value !== undefined ? value : match;
+    if (value !== undefined) {
+      return value;
+    }
+    const dynamic = resolveDynamicVariable(key);
+    return dynamic !== undefined ? dynamic : match;
   });
 }
 

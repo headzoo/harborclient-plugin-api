@@ -55,9 +55,20 @@ export function getCodeEditorConfigStore(): ReturnType<
 }
 
 /**
- * React context for CodeEditor theme/setup within the host renderer tree.
+ * Returns the CodeEditor React context, creating it on first access.
+ *
+ * Deferred so importing CodeEditor in a plugin bundle does not call requireHostReact()
+ * before activate() runs installReact(hc.react).
  */
-export const CodeEditorContext = createContext<CodeEditorConfig | null>(null);
+function getCodeEditorContext() {
+  if (codeEditorContext == null) {
+    codeEditorContext = createContext<CodeEditorConfig | null>(null);
+  }
+  return codeEditorContext;
+}
+
+/** Lazily initialized; use {@link getCodeEditorContext} instead of reading directly. */
+let codeEditorContext: ReturnType<typeof createContext<CodeEditorConfig | null>> | null = null;
 
 interface ProviderProps {
   /**
@@ -87,7 +98,7 @@ export function CodeEditorConfigProvider({ value, children }: ProviderProps): JS
     store.setState(value);
   }, [store, value]);
 
-  return createElement(CodeEditorContext.Provider, { value }, children);
+  return createElement(getCodeEditorContext().Provider, { value }, children);
 }
 
 /**
@@ -96,7 +107,7 @@ export function CodeEditorConfigProvider({ value, children }: ProviderProps): JS
  * @returns Active CodeEditor configuration.
  */
 export function useCodeEditorConfig(): CodeEditorConfig {
-  const contextValue = useContext(CodeEditorContext);
+  const contextValue = useContext(getCodeEditorContext());
   const store = getCodeEditorConfigStore();
   const storeValue = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
   return contextValue ?? storeValue;
