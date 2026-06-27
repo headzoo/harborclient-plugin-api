@@ -61,8 +61,10 @@ export function getFooterPanelMaxSize(containerRef: RefObject<HTMLDivElement | n
 export function footerPanelClassName(open: boolean): string {
   return [
     'absolute inset-x-0 bottom-full z-40 flex flex-col border-t border-separator bg-surface',
-    'shadow-[0_-4px_16px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out app-no-drag',
-    open ? 'translate-y-0' : 'translate-y-full pointer-events-none'
+    'transition-transform duration-300 ease-out app-no-drag',
+    open
+      ? 'translate-y-0 shadow-[0_-4px_16px_rgba(0,0,0,0.12)]'
+      : 'translate-y-full pointer-events-none shadow-none'
   ].join(' ');
 }
 
