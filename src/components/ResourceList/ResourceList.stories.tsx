@@ -76,7 +76,11 @@ export const WrappingRow: Story = {
     <ResourceList className="max-w-xs">
       <ResourceListRow
         wrap
-        primary={<ResourceListPrimary>Long collection name that wraps on narrow widths</ResourceListPrimary>}
+        primary={
+          <ResourceListPrimary>
+            Long collection name that wraps on narrow widths
+          </ResourceListPrimary>
+        }
         secondary="extra-long-identifier.example.com/v1/resources"
         actions={
           <Button variant="secondary" onClick={fn()}>

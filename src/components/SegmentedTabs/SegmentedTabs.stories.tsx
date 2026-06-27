@@ -1,12 +1,7 @@
 import { useState } from '@harborclient/sdk/react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
-import {
-  SegmentedTabPanel,
-  SegmentedTabs,
-  SegmentedTabsGroup,
-  type TabItem
-} from './index.js';
+import { SegmentedTabPanel, SegmentedTabs, SegmentedTabsGroup, type TabItem } from './index.js';
 
 type RequestTab = 'params' | 'headers' | 'body';
 
@@ -41,7 +36,9 @@ type Story = StoryObj<typeof meta>;
 export const Standalone: Story = {
   render: (args) => {
     const [value, setValue] = useState<RequestTab>(args.value as RequestTab);
-    return <SegmentedTabs {...args} value={value} onChange={(next) => setValue(next as RequestTab)} />;
+    return (
+      <SegmentedTabs {...args} value={value} onChange={(next) => setValue(next as RequestTab)} />
+    );
   }
 };
 
@@ -52,7 +49,9 @@ export const FullWidth: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<RequestTab>(args.value as RequestTab);
-    return <SegmentedTabs {...args} value={value} onChange={(next) => setValue(next as RequestTab)} />;
+    return (
+      <SegmentedTabs {...args} value={value} onChange={(next) => setValue(next as RequestTab)} />
+    );
   }
 };
 
@@ -69,13 +68,7 @@ export const RadioGroup: Story = {
   },
   render: (args) => {
     const [value, setValue] = useState<'left' | 'center' | 'right'>(args.value as 'left');
-    return (
-      <SegmentedTabs
-        {...args}
-        value={value}
-        onChange={setValue as (next: string) => void}
-      />
-    );
+    return <SegmentedTabs {...args} value={value} onChange={setValue as (next: string) => void} />;
   }
 };
 

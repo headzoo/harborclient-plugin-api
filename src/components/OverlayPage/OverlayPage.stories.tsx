@@ -34,9 +34,7 @@ export const WithFooter: Story = {
   args: {
     title: 'Plugin configuration',
     children: (
-      <p className="m-0 text-[14px] text-text">
-        Adjust plugin-specific options before saving.
-      </p>
+      <p className="m-0 text-[14px] text-text">Adjust plugin-specific options before saving.</p>
     ),
     footer: (
       <ModalFooter spaced className="mt-6">

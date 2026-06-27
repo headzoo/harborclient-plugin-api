@@ -2,10 +2,7 @@ import { useState } from '@harborclient/sdk/react';
 import type { Decorator, Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import type { Variable } from '../../types.js';
-import {
-  CodeEditorConfigProvider,
-  DEFAULT_CODE_EDITOR_CONFIG
-} from './config.js';
+import { CodeEditorConfigProvider, DEFAULT_CODE_EDITOR_CONFIG } from './config.js';
 import { CodeEditor } from './index.js';
 
 const sampleVariables: Variable[] = [
