@@ -8,7 +8,55 @@ See [Architecture](/architecture#two-runtimes) for how the main entry fits along
 
 ## hc.storage
 
-Same namespaced `get` / `set` API as the renderer. Requires the `storage` permission.
+Plugin-scoped persistent key-value storage. Keys are namespaced by plugin `id` in the HarborClient main process (SQLite `plugin_storage` table). Requires the `storage` permission.
+
+The main entry uses the same `get` / `set` API as the [renderer](/renderer-data#hcstorage). Calls from the SES utilityProcess child are routed to the Electron main process, which reads and writes through the same backing store as renderer `hc.storage` — no custom IPC channel or renderer bridge is required.
+
+Values must be JSON-serializable. There is no `delete` or `list` API; store structured data under a few keys when you need collections or indexes.
+
+Use main-process storage when HTTP hooks or other main-entry logic must persist state (OAuth tokens, API key config mirrored for `onBeforeSend`, response baselines, and similar). Renderer-only settings can stay in the renderer entry.
+
+### hc.storage.get(key)
+
+**Signature:** `<T>(key: string) => Promise<T | undefined>`
+
+Returns the stored value, or `undefined` if the key has never been set.
+
+```typescript
+import type { MainPluginContext } from '@harborclient/sdk';
+
+export function activate(hc: MainPluginContext): void {
+  hc.subscriptions.push(
+    hc.http.onBeforeSend(async (request) => {
+      const token = await hc.storage.get<string>('accessToken');
+      if (token) {
+        request.headers.Authorization = `Bearer ${token}`;
+      }
+    })
+  );
+}
+```
+
+### hc.storage.set(key, value)
+
+**Signature:** `<T>(key: string, value: T) => Promise<void>`
+
+Persists a JSON-serializable value.
+
+```typescript
+await hc.storage.set('accessToken', refreshedToken);
+await hc.storage.set('links', [{ collectionId: 1, dotenvPath: '/path/to/.env' }]);
+```
+
+Invalid JSON already stored for a key causes `get` to throw with a plugin-scoped error message (same behavior as the renderer API).
+
+## hc.database
+
+Plugin-scoped SQLite database with the same API as the [renderer](/renderer-data#hcdatabase). Requires the `database` permission.
+
+The main entry routes SQL through the Electron main process, which opens one isolated file per plugin id. Use this from HTTP hooks when you need relational persistence without a renderer bridge.
+
+See [Themes and storage → hc.database](/renderer-data#hcdatabase) for method signatures, migration examples, and transaction usage.
 
 ## hc.http.onBeforeSend(handler)
 

@@ -28,6 +28,7 @@ export interface SidebarPanelContribution extends UiContributionBase {
 
 export interface SidebarSectionContribution extends UiContributionBase {
   Component: React.ComponentType;
+  headerActions?: React.ComponentType;
   order?: number;
 }
 

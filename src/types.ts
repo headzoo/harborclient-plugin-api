@@ -222,6 +222,12 @@ export interface SidebarSectionContribution extends UiContributionBase {
   Component: React.ComponentType;
 
   /**
+   * Optional action controls rendered in the section header row (for example a
+   * clear or refresh button). Use {@link PluginContext.react} — do not bundle React.
+   */
+  headerActions?: React.ComponentType;
+
+  /**
    * Sort order below Collections / Environments. Lower values appear first.
    */
   order?: number;
@@ -768,32 +774,32 @@ export type BuiltinThemeId = 'light' | 'dark' | 'system' | 'high-contrast';
  */
 export type ActiveTheme =
   | {
-      /**
-       * Theme provided by HarborClient.
-       */
-      source: 'builtin';
+    /**
+     * Theme provided by HarborClient.
+     */
+    source: 'builtin';
 
-      /**
-       * Built-in theme id.
-       */
-      id: BuiltinThemeId;
-    }
+    /**
+     * Built-in theme id.
+     */
+    id: BuiltinThemeId;
+  }
   | {
-      /**
-       * Theme registered by a plugin via {@link PluginThemes.register}.
-       */
-      source: 'plugin';
+    /**
+     * Theme registered by a plugin via {@link PluginThemes.register}.
+     */
+    source: 'plugin';
 
-      /**
-       * Plugin package id from `manifest.json`.
-       */
-      pluginId: string;
+    /**
+     * Plugin package id from `manifest.json`.
+     */
+    pluginId: string;
 
-      /**
-       * Theme id from {@link ThemeContribution.id}.
-       */
-      themeId: string;
-    };
+    /**
+     * Theme id from {@link ThemeContribution.id}.
+     */
+    themeId: string;
+  };
 
 /**
  * Custom appearance theme registration and change notifications.
@@ -856,6 +862,68 @@ export interface PluginStorage {
    * @param value - Value to persist.
    */
   set<T>(key: string, value: T): Promise<void>;
+}
+
+/**
+ * Result of a mutating SQL statement (`INSERT`, `UPDATE`, `DELETE`).
+ */
+export interface PluginRunResult {
+  /** Number of rows changed by the statement. */
+  changes: number;
+
+  /** Row id of the last insert, as a number or string when larger than `Number.MAX_SAFE_INTEGER`. */
+  lastInsertRowid: number | string;
+}
+
+/**
+ * Transaction-scoped database operations passed to {@link PluginDatabase.transaction}.
+ */
+export interface PluginDatabaseTx {
+  /**
+   * Returns the first row matching a parameterized query.
+   *
+   * @param sql - Single-statement SQL with `?` placeholders.
+   * @param params - Bound parameter values.
+   */
+  get<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T | undefined>;
+
+  /**
+   * Returns all rows matching a parameterized query.
+   *
+   * @param sql - Single-statement SQL with `?` placeholders.
+   * @param params - Bound parameter values.
+   */
+  all<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]>;
+
+  /**
+   * Runs a mutating parameterized statement.
+   *
+   * @param sql - Single-statement SQL with `?` placeholders.
+   * @param params - Bound parameter values.
+   */
+  run(sql: string, params?: unknown[]): Promise<PluginRunResult>;
+}
+
+/**
+ * Plugin-scoped SQLite database backed by an isolated file in the main process.
+ *
+ * Requires the `database` permission. Each plugin id gets its own database file under
+ * HarborClient userData — not shared with collections or other plugins.
+ */
+export interface PluginDatabase extends PluginDatabaseTx {
+  /**
+   * Executes one or more DDL statements (migrations).
+   *
+   * @param sql - Multi-statement SQL script.
+   */
+  exec(sql: string): Promise<void>;
+
+  /**
+   * Runs a callback inside an exclusive transaction (`BEGIN` … `COMMIT` / `ROLLBACK`).
+   *
+   * @param fn - Callback receiving transaction-scoped query helpers.
+   */
+  transaction<T>(fn: (tx: PluginDatabaseTx) => Promise<T>): Promise<T>;
 }
 
 /**
@@ -1454,6 +1522,11 @@ export interface PluginContext {
    * Plugin-scoped persistent storage. Requires the `storage` permission.
    */
   storage: PluginStorage;
+
+  /**
+   * Plugin-scoped SQLite database. Requires the `database` permission.
+   */
+  database: PluginDatabase;
 
   /**
    * Plugin-scoped filesystem access. Requires `filesystem:*` permissions as documented
@@ -2076,6 +2149,11 @@ export interface MainPluginContext {
    * Plugin-scoped persistent storage. Requires the `storage` permission.
    */
   storage: PluginStorage;
+
+  /**
+   * Plugin-scoped SQLite database. Requires the `database` permission.
+   */
+  database: PluginDatabase;
 
   /**
    * HTTP hook registration. Requires the `http` permission.

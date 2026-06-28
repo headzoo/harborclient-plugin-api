@@ -6,6 +6,7 @@ HarborClient uses a trusted-extension model similar to VS Code or Obsidian. Perm
 | ------------------ | -------------------------------------------------------------------------------------------------- |
 | `ui`               | All `hc.ui.register*` methods, `hc.themes.register`, `hc.ui.showToast`, and `hc.commands.register` |
 | `storage`          | Plugin-scoped persistent key-value storage via `hc.storage`                                        |
+| `database`         | Plugin-scoped private SQLite database via `hc.database` (one file per plugin under userData)       |
 | `filesystem:pick`  | Open and save dialogs; read and write only user-selected paths                                     |
 | `filesystem:read`  | Read from allowlisted paths (plugin directory plus granted paths)                                  |
 | `filesystem:write` | Write to allowlisted paths                                                                         |

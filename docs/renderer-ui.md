@@ -67,12 +67,13 @@ hc.subscriptions.push(
 
 **Manifest:** `contributes.sidebarSections`
 
-| Parameter   | Type                  | Description                                 |
-| ----------- | --------------------- | ------------------------------------------- |
-| `id`        | `string`              | Section id                                  |
-| `title`     | `string`              | Collapsible section heading                 |
-| `Component` | `React.ComponentType` | Section body                                |
-| `order`     | `number`              | Sort order below Collections / Environments |
+| Parameter       | Type                  | Description                                 |
+| --------------- | --------------------- | ------------------------------------------- |
+| `id`            | `string`              | Section id                                  |
+| `title`         | `string`              | Collapsible section heading                 |
+| `Component`     | `React.ComponentType` | Section body                                |
+| `headerActions` | `React.ComponentType` | Optional controls in the section header row |
+| `order`         | `number`              | Sort order below Collections / Environments |
 
 Adds a collapsible block inside the scrollable sidebar, using the same pattern as the built-in Collections and Environments sections.
 

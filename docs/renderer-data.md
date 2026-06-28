@@ -144,6 +144,72 @@ Persists a JSON-serializable value.
 await hc.storage.set('enabled', true);
 ```
 
+## hc.database
+
+Plugin-scoped SQLite database. Each plugin id gets its own file under HarborClient userData (`plugin-databases/{pluginId}.sqlite`). Requires the `database` permission.
+
+Use `hc.database` when you need indexed queries, relational data, or large structured stores. Keep small settings in `hc.storage`; the two APIs share no tables and neither can access HarborClient collections or other plugins' data.
+
+`get`, `all`, and `run` accept **single-statement** parameterized SQL (`?` placeholders). Use `exec` for migration scripts (multi-statement DDL). Use `transaction` for atomic multi-step writes.
+
+### hc.database.get(sql, params?)
+
+**Signature:** `<T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T | undefined>`
+
+Returns the first row, or `undefined` when no row matches.
+
+```typescript
+const row = await hc.database.get<{ count: number }>(
+  'SELECT COUNT(*) AS count FROM events WHERE request_id = ?',
+  [requestId]
+);
+```
+
+### hc.database.all(sql, params?)
+
+**Signature:** `<T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T[]>`
+
+Returns all matching rows.
+
+### hc.database.run(sql, params?)
+
+**Signature:** `(sql: string, params?: unknown[]) => Promise<PluginRunResult>`
+
+Runs an `INSERT`, `UPDATE`, or `DELETE` statement. Returns `{ changes, lastInsertRowid }`.
+
+### hc.database.exec(sql)
+
+**Signature:** `(sql: string) => Promise<void>`
+
+Executes a multi-statement SQL script (typically migrations). Rejects scripts containing `ATTACH`, `DETACH`, or `load_extension`.
+
+```typescript
+await hc.database.exec(`
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_id INTEGER NOT NULL,
+    status INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_events_request_id ON events(request_id);
+`);
+```
+
+### hc.database.transaction(fn)
+
+**Signature:** `<T>(fn: (tx: PluginDatabaseTx) => Promise<T>) => Promise<T>`
+
+Runs `fn` inside an exclusive transaction. The `tx` object exposes `get`, `all`, and `run` bound to the same transaction.
+
+```typescript
+await hc.database.transaction(async (tx) => {
+  await tx.run('INSERT INTO outbox (payload) VALUES (?)', [JSON.stringify(body)]);
+  await tx.run('UPDATE counters SET value = value + 1 WHERE name = ?', ['sent']);
+});
+```
+
+Plugin database files are included in HarborClient `.hcb` backups and removed when the plugin is uninstalled.
+
 ## hc.fs
 
 Plugin-scoped filesystem access backed by main-process permission checks and a per-plugin path allowlist. Requires `filesystem:pick` for open/save dialogs, `filesystem:read` for `readFile`, and `filesystem:write` for `writeFile`. User-selected paths from pick/save dialogs are added to the allowlist automatically; the plugin package directory is allowlisted on load. User-granted paths persist across app restarts and are restored when the plugin loads again.
