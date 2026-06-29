@@ -17,7 +17,9 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
  * macOS-style checkbox with a custom box slightly larger than the native control.
  */
 export function Checkbox({ ref, className, ...props }: Props): JSX.Element {
-  const wrapperClasses = className ? `inline-flex shrink-0 ${className}` : 'inline-flex shrink-0';
+  const wrapperClasses = className
+    ? `relative inline-flex shrink-0 ${className}`
+    : 'relative inline-flex shrink-0';
 
   return (
     <span className={wrapperClasses}>

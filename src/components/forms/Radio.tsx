@@ -17,7 +17,9 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
  * macOS-style radio button with a custom circle slightly larger than the native control.
  */
 export function Radio({ ref, className, ...props }: Props): JSX.Element {
-  const wrapperClasses = className ? `inline-flex shrink-0 ${className}` : 'inline-flex shrink-0';
+  const wrapperClasses = className
+    ? `relative inline-flex shrink-0 ${className}`
+    : 'relative inline-flex shrink-0';
 
   return (
     <span className={wrapperClasses}>

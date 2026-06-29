@@ -20,15 +20,17 @@ export const field =
 export const surfaceField =
   'w-full rounded-md border border-separator bg-field px-3 py-2 text-[14px] text-text';
 
-/** Visually hidden native checkbox input used with {@link checkboxBox}. */
-export const checkboxInput = 'peer sr-only';
+/** Transparent overlay checkbox input sized to {@link checkboxBox}. */
+export const checkboxInput =
+  'peer absolute inset-0 m-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed';
 
 /** Custom checkbox box styled via `peer-checked` / `peer-focus-visible` on {@link checkboxInput}. */
 export const checkboxBox =
   'flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded border border-separator bg-field text-white peer-checked:border-accent peer-checked:bg-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent peer-disabled:cursor-not-allowed peer-disabled:opacity-50 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100';
 
-/** Visually hidden native radio input used with {@link radioCircle}. */
-export const radioInput = 'peer sr-only';
+/** Transparent overlay radio input sized to {@link radioCircle}. */
+export const radioInput =
+  'peer absolute inset-0 m-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed';
 
 /** Custom radio circle styled via `peer-checked` / `peer-focus-visible` on {@link radioInput}. */
 export const radioCircle =
