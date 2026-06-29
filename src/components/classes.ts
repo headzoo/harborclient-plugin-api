@@ -12,6 +12,6 @@ export const segmentGroup =
  */
 export function segment(active: boolean): string {
   return active
-    ? 'cursor-pointer rounded-[2.5px] border-none bg-control px-3 py-1 text-[15px] text-text shadow-sm app-no-drag'
+    ? 'cursor-pointer rounded-[2.5px] border-none bg-field px-3 py-1 text-[15px] text-text shadow-sm app-no-drag'
     : 'cursor-pointer rounded-[2.5px] border-none bg-transparent px-3 py-1 text-[15px] text-muted hover:text-text app-no-drag';
 }

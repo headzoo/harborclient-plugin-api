@@ -1,169 +1,13 @@
-import {
-  createContext,
-  createElement,
-  useCallback,
-  useContext,
-  useId,
-  useMemo,
-  useRef
-} from '@harborclient/sdk/react';
-import type { JSX, KeyboardEvent, ReactNode } from 'react';
+import { useCallback, useContext, useId, useMemo, useRef } from '@harborclient/sdk/react';
+import type { JSX, KeyboardEvent } from 'react';
 import { resolveTabListKeyAction } from '../utils.js';
 import { segment, segmentGroup } from '../classes.js';
+import { SegmentedTabsContext } from './SegmentedTabsContext.js';
+import type { TabItem } from './types.js';
 
-export interface TabItem<T extends string> {
-  /**
-   * Unique tab identifier.
-   */
-  value: T;
-
-  /**
-   * Tab label or custom content.
-   */
-  label: ReactNode;
-
-  /**
-   * When true, the tab is not rendered.
-   */
-  hidden?: boolean;
-
-  /**
-   * When true, the tab button is disabled.
-   */
-  disabled?: boolean;
-
-  /**
-   * When true, renders a small dot indicating the tab has values set.
-   */
-  indicator?: boolean;
-}
-
-interface SegmentedTabsContextValue {
-  /**
-   * Currently selected tab value.
-   */
-  value: string;
-
-  /**
-   * Selects a tab by value.
-   */
-  onChange: (value: string) => void;
-
-  /**
-   * Accessible name for the tab list.
-   */
-  ariaLabel: string;
-
-  /**
-   * Stable DOM id for a tab control.
-   */
-  getTabId: (value: string) => string;
-
-  /**
-   * Stable DOM id for a tab panel linked to a tab.
-   */
-  getPanelId: (value: string) => string;
-}
-
-const SegmentedTabsContext = createContext<SegmentedTabsContextValue | null>(null);
-
-interface GroupProps<T extends string> {
-  /**
-   * Currently selected tab value.
-   */
-  value: T;
-
-  /**
-   * Called when the user selects a different tab.
-   *
-   * @param value - Newly selected tab value.
-   */
-  onChange: (value: T) => void;
-
-  /**
-   * Accessible name for the tab list.
-   */
-  ariaLabel: string;
-
-  /**
-   * Tab list and linked tab panels.
-   */
-  children: ReactNode;
-}
-
-/**
- * Provides tab selection state and stable ids for `SegmentedTabs` and
- * `SegmentedTabPanel` children.
- */
-export function SegmentedTabsGroup<T extends string>({
-  value,
-  onChange,
-  ariaLabel,
-  children
-}: GroupProps<T>): JSX.Element {
-  const baseId = useId();
-
-  /**
-   * Memoizes context so tab ids stay stable across renders while value updates
-   * propagate to list and panel children.
-   */
-  const contextValue = useMemo(
-    (): SegmentedTabsContextValue => ({
-      value,
-      onChange: (nextValue) => onChange(nextValue as T),
-      ariaLabel,
-      getTabId: (tabValue) => `${baseId}-tab-${tabValue}`,
-      getPanelId: (tabValue) => `${baseId}-panel-${tabValue}`
-    }),
-    [value, onChange, ariaLabel, baseId]
-  );
-
-  return createElement(SegmentedTabsContext.Provider, { value: contextValue }, children);
-}
-
-interface PanelProps<T extends string> {
-  /**
-   * Tab value that controls visibility of this panel.
-   */
-  value: T;
-
-  /**
-   * Panel content shown when this tab is selected.
-   */
-  children: ReactNode;
-
-  /**
-   * Additional CSS classes for the panel container.
-   */
-  className?: string;
-}
-
-/**
- * Renders a WAI-ARIA tab panel linked to the matching tab in the parent group.
- */
-export function SegmentedTabPanel<T extends string>({
-  value,
-  children,
-  className
-}: PanelProps<T>): JSX.Element | null {
-  const context = useContext(SegmentedTabsContext);
-  if (!context) {
-    throw new Error('SegmentedTabPanel must be used within SegmentedTabsGroup');
-  }
-
-  if (context.value !== value) return null;
-
-  return (
-    <div
-      role="tabpanel"
-      id={context.getPanelId(value)}
-      aria-labelledby={context.getTabId(value)}
-      className={className}
-    >
-      {children}
-    </div>
-  );
-}
+export { SegmentedTabsGroup } from './SegmentedTabsGroup.js';
+export { SegmentedTabPanel } from './SegmentedTabPanel.js';
+export type { TabItem } from './types.js';
 
 interface Props<T extends string> {
   /**
@@ -314,11 +158,11 @@ export function SegmentedTabs<T extends string>({
             {...(isRadiogroup
               ? { role: 'radio', 'aria-checked': selected }
               : {
-                  role: 'tab',
-                  id: getTabId(tab.value),
-                  'aria-selected': selected,
-                  ...(context ? { 'aria-controls': getPanelId(tab.value) } : {})
-                })}
+                role: 'tab',
+                id: getTabId(tab.value),
+                'aria-selected': selected,
+                ...(context ? { 'aria-controls': getPanelId(tab.value) } : {})
+              })}
           >
             <span className="inline-flex items-center gap-1.5">
               {tab.label}
