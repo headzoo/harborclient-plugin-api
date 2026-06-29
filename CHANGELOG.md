@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.6.11 - 2026-06-29
+
+- Fix Checkbox and Radio click target alignment: pass pointer events through the decorative box/circle and pin the wrapper to 18px so the overlay input matches the visible control.
+
 ## 0.4.4 - 2026-06-26
 
 - Document global variables for plugins: precedence chain, `RequestTabContext.variables`, and `harborclient:updateGlobalVariables` host command.
