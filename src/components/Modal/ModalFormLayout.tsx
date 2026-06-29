@@ -1,4 +1,5 @@
 import type { JSX, ReactNode } from 'react';
+import { FieldError } from '../FieldError/index.js';
 import { ModalFooter } from './ModalFooter.js';
 
 interface Props {
@@ -41,7 +42,7 @@ export function ModalFormLayout({
   return (
     <>
       {children}
-      {error}
+      {error != null && error !== '' ? <FieldError spacing="modal">{error}</FieldError> : null}
       {actions ? <ModalFooter spaced={actionsSpaced}>{actions}</ModalFooter> : null}
     </>
   );

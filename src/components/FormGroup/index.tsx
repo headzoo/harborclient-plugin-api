@@ -1,6 +1,7 @@
-import { cloneElement, isValidElement } from '@harborclient/sdk/react';
+import { useId } from '@harborclient/sdk/react';
 import type { JSX, ReactNode } from 'react';
 import { FieldError } from '../FieldError/index.js';
+import { enhanceControl } from '../enhanceControl.js';
 
 /**
  * Layout preset for label and control placement within a form group.
@@ -50,6 +51,11 @@ interface Props {
   errorId?: string;
 
   /**
+   * Explicit id for the description element; defaults to `${htmlFor}-description` when `htmlFor` is set.
+   */
+  descriptionId?: string;
+
+  /**
    * Label and control placement. Defaults to stacked (label above control).
    */
   layout?: FormGroupLayout;
@@ -95,35 +101,6 @@ function labelClasses(tone: FormGroupLabelTone, srOnly: boolean, inline: boolean
 }
 
 /**
- * Merges accessibility attributes onto a single control when a field error is present.
- *
- * @param child - Form control element to enhance.
- * @param describedBy - Id of the error element for `aria-describedby`.
- * @returns The original node or a cloned element with invalid/describedby props.
- */
-function enhanceControl(child: ReactNode, describedBy: string | undefined): ReactNode {
-  if (
-    !describedBy ||
-    !isValidElement<{ 'aria-describedby'?: string; 'aria-invalid'?: boolean }>(child)
-  ) {
-    return child;
-  }
-
-  const existingDescribedBy =
-    typeof child.props['aria-describedby'] === 'string'
-      ? child.props['aria-describedby']
-      : undefined;
-  const mergedDescribedBy = existingDescribedBy
-    ? `${existingDescribedBy} ${describedBy}`
-    : describedBy;
-
-  return cloneElement(child, {
-    'aria-invalid': true,
-    'aria-describedby': mergedDescribedBy
-  });
-}
-
-/**
  * Reusable form field wrapper that pairs a label with one or more controls.
  * Supports stacked fields, checkboxes, inline rows, radio options, and
  * adjacent checkbox rows used in list pickers.
@@ -134,6 +111,7 @@ function enhanceControl(child: ReactNode, describedBy: string | undefined): Reac
  * @param description - Optional helper text below the control.
  * @param error - Optional validation error below the control.
  * @param errorId - Explicit error element id for `aria-describedby`.
+ * @param descriptionId - Explicit description element id for `aria-describedby`.
  * @param layout - Label/control placement preset.
  * @param labelTone - Label color style.
  * @param srOnly - Hide label visually for screen-reader-only labels.
@@ -147,12 +125,15 @@ export function FormGroup({
   description,
   error,
   errorId,
+  descriptionId,
   layout = 'stacked',
   labelTone = 'default',
   srOnly = false,
   className,
   labelClassName
 }: Props): JSX.Element {
+  const generatedId = useId();
+  const controlId = htmlFor ?? generatedId;
   const extra = className ?? '';
 
   if (layout === 'associated') {
@@ -167,10 +148,11 @@ export function FormGroup({
   if (layout === 'checkboxAdjacent') {
     const wrapperClasses = extra ? `flex items-start gap-2 ${extra}` : 'flex items-start gap-2';
     const adjacentLabelClasses = labelClassName ?? 'min-w-0 flex-1 text-[14px] text-text';
+    const linkedChildren = enhanceControl(children, { id: controlId });
     return (
       <div className={wrapperClasses}>
-        {children}
-        <label htmlFor={htmlFor} className={adjacentLabelClasses}>
+        {linkedChildren}
+        <label htmlFor={controlId} className={adjacentLabelClasses}>
           {label}
         </label>
       </div>
@@ -181,9 +163,10 @@ export function FormGroup({
     const wrapperClasses = extra
       ? `inline-flex cursor-pointer items-center gap-1.5 text-[14px] text-text app-no-drag ${extra}`
       : 'inline-flex cursor-pointer items-center gap-1.5 text-[14px] text-text app-no-drag';
+    const linkedChildren = enhanceControl(children, { id: controlId });
     return (
-      <label htmlFor={htmlFor} className={wrapperClasses}>
-        {children}
+      <label htmlFor={controlId} className={wrapperClasses}>
+        {linkedChildren}
         {label}
       </label>
     );
@@ -191,9 +174,10 @@ export function FormGroup({
 
   if (layout === 'checkbox') {
     const wrapperClasses = extra ? `flex items-center gap-2 ${extra}` : 'flex items-center gap-2';
+    const linkedChildren = enhanceControl(children, { id: controlId });
     return (
-      <label htmlFor={htmlFor} className={wrapperClasses}>
-        {children}
+      <label htmlFor={controlId} className={wrapperClasses}>
+        {linkedChildren}
         <span className={labelClasses(labelTone, srOnly, false)}>{label}</span>
       </label>
     );
@@ -203,19 +187,32 @@ export function FormGroup({
     const wrapperClasses = extra
       ? `flex min-w-0 flex-1 items-center gap-2 ${extra}`
       : 'flex min-w-0 flex-1 items-center gap-2';
+    const linkedChildren = enhanceControl(children, { id: controlId });
     return (
-      <label htmlFor={htmlFor} className={wrapperClasses}>
+      <label htmlFor={controlId} className={wrapperClasses}>
         <span className={labelClasses(labelTone, srOnly, true)}>{label}</span>
-        {children}
+        {linkedChildren}
       </label>
     );
   }
 
+  const resolvedDescriptionId =
+    description != null && description !== ''
+      ? (descriptionId ?? (htmlFor ? `${htmlFor}-description` : undefined))
+      : undefined;
   const resolvedErrorId =
     error != null && error !== ''
       ? (errorId ?? (htmlFor ? `${htmlFor}-error` : undefined))
       : undefined;
-  const control = enhanceControl(children, resolvedErrorId);
+  const describedByIds = [resolvedDescriptionId, resolvedErrorId].filter(
+    (id): id is string => id != null
+  );
+  const describedBy = describedByIds.length > 0 ? describedByIds.join(' ') : undefined;
+  const control = enhanceControl(children, {
+    describedBy,
+    invalid: resolvedErrorId != null,
+    id: htmlFor
+  });
   const wrapperClasses = extra ? `flex flex-col gap-1 ${extra}` : 'flex flex-col gap-1';
 
   return (
@@ -223,8 +220,10 @@ export function FormGroup({
       <label htmlFor={htmlFor} className="flex flex-col gap-1">
         <span className={labelClasses(labelTone, srOnly, false)}>{label}</span>
         {control}
-        {description != null && description !== '' ? (
-          <p className="m-0 text-[14px] text-muted">{description}</p>
+        {resolvedDescriptionId ? (
+          <p id={resolvedDescriptionId} className="m-0 text-[14px] text-muted">
+            {description}
+          </p>
         ) : null}
       </label>
       {resolvedErrorId ? (

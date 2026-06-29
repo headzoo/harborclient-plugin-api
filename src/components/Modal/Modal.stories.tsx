@@ -27,7 +27,7 @@ export const WithHeader: Story = {
     description: 'This action cannot be undone.',
     children: (
       <ModalFormLayout
-        error={<p className="m-0 text-[14px] text-danger">Collection is in use by 2 requests.</p>}
+        error="Collection is in use by 2 requests."
         actions={
           <>
             <Button variant="secondary" onClick={fn()}>

@@ -88,8 +88,9 @@ export function Modal({
   children
 }: Props): JSX.Element {
   const panelRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
-  useDialogFocus(panelRef);
+  useDialogFocus(overlayRef);
 
   /**
    * Closes the modal when Escape is pressed unless disabled.
@@ -118,15 +119,18 @@ export function Modal({
     ? `${className} flex max-h-[85vh] flex-col overflow-hidden rounded-lg border border-separator bg-surface shadow-xl`
     : `${className} rounded-lg border border-separator bg-surface p-4 shadow-xl`;
 
+  const descriptionId = description && labelledBy ? `${labelledBy}-description` : undefined;
+
   return (
-    <div className={overlayClass} onClick={onClose}>
+    <div ref={overlayRef} className={overlayClass}>
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
+        aria-describedby={descriptionId}
         aria-label={label}
-        className={panelClass}
+        className={`relative z-10 ${panelClass}`}
         onClick={(event) => event.stopPropagation()}
       >
         {title && labelledBy ? (
@@ -135,6 +139,7 @@ export function Modal({
               titleId={labelledBy}
               title={title}
               description={description}
+              descriptionId={descriptionId}
               headerActions={headerActions}
               closeDisabled={closeDisabled}
               onClose={onClose}
@@ -145,6 +150,13 @@ export function Modal({
           children
         )}
       </div>
+      <button
+        type="button"
+        tabIndex={-1}
+        className="absolute inset-0 z-0 cursor-default border-none bg-transparent p-0"
+        aria-label="Close dialog"
+        onClick={onClose}
+      />
     </div>
   );
 }

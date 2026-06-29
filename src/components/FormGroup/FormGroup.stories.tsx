@@ -35,7 +35,7 @@ export const WithError: Story = {
     label: 'Endpoint URL',
     htmlFor: 'endpoint-url',
     error: 'Enter a valid HTTPS URL.',
-    children: <Input id="endpoint-url" defaultValue="not-a-url" aria-invalid />
+    children: <Input id="endpoint-url" defaultValue="not-a-url" />
   }
 };
 
@@ -44,5 +44,12 @@ export const Checkbox: Story = {
     label: 'Enable debug logging',
     layout: 'checkbox',
     children: <Input type="checkbox" />
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Label association is automatic — no `htmlFor` or `id` required on the control.'
+      }
+    }
   }
 };

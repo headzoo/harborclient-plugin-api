@@ -88,15 +88,21 @@ export function KeyValueEditor({
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            <th className={`${thClass} w-6 p-0`} />
-            <th className={thClass}>Key</th>
-            <th className={thClass}>Value</th>
-            <th className={`${thClass} w-7 p-0`} />
+            <th scope="col" className={`${thClass} w-6 p-0`}>
+              <span className="sr-only">Enable</span>
+            </th>
+            <th scope="col" className={thClass}>
+              Key
+            </th>
+            <th scope="col" className={thClass}>
+              Value
+            </th>
+            <th scope="col" className={`${thClass} w-7 p-0`} />
           </tr>
         </thead>
         <tbody className="[&_tr:last-child_td]:border-b-0">
           {rows.map((row, index) => (
-            <tr className="group" key={index}>
+            <tr key={index}>
               <td className={`${tdClass} w-6 p-1 text-center`}>
                 <Input
                   type="checkbox"
@@ -135,6 +141,7 @@ export function KeyValueEditor({
                   variant="iconDanger"
                   onClick={() => removeRow(index)}
                   title="Remove"
+                  aria-label={`Remove row ${index + 1}`}
                 >
                   <FaIcon icon={faXmark} className="h-3.5 w-3.5" />
                 </Button>

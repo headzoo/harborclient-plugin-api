@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Global busy overlay with a delayed show and minimum visible duration. Requires host styles for `body.app-busy` and `.busy-progress-bar`.'
+          'Global busy overlay with a delayed show and minimum visible duration. Sets `body.app-busy` and `aria-busy` while visible. Requires host styles for `.busy-progress-bar`.'
       }
     }
   }

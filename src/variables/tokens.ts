@@ -1,5 +1,5 @@
 import type { Variable } from '../types.js';
-import { resolveDynamicVariable } from './dynamic.js';
+import { getDynamicVariableDescription, resolveDynamicVariable } from './dynamic.js';
 
 /**
  * A segment of text, optionally marking a {{variable}} token.
@@ -62,6 +62,69 @@ export function tokenizeVariables(text: string): VariableToken[] {
   }
 
   return tokens;
+}
+
+/**
+ * A {{variable}} token located at a character offset in source text.
+ */
+export interface VariableTokenMatch {
+  key: string;
+  start: number;
+  end: number;
+}
+
+/**
+ * Returns the variable token containing the given character offset, if any.
+ *
+ * @param text - Text containing variable placeholders.
+ * @param offset - Zero-based character offset from the start of `text`.
+ * @returns Matching token range and key, or null when offset is outside a token.
+ */
+export function getVariableTokenAtOffset(text: string, offset: number): VariableTokenMatch | null {
+  let position = 0;
+
+  for (const token of tokenizeVariables(text)) {
+    const start = position;
+    const end = position + token.text.length;
+    if (token.key && offset >= start && offset <= end) {
+      return { key: token.key, start, end };
+    }
+    position = end;
+  }
+
+  return null;
+}
+
+/**
+ * Resolved tooltip text for a variable key.
+ */
+export interface VariableTooltipContent {
+  text: string;
+  muted: boolean;
+}
+
+/**
+ * Resolves display text for a variable tooltip.
+ *
+ * @param key - Variable name from a {{key}} placeholder.
+ * @param variables - Collection-scoped variables.
+ * @returns Tooltip body text and whether it should use muted styling.
+ */
+export function getVariableTooltipContent(
+  key: string,
+  variables: Variable[]
+): VariableTooltipContent {
+  const value = resolveVariable(key, variables);
+  if (value !== undefined) {
+    return { text: value, muted: false };
+  }
+
+  const dynamicDescription = getDynamicVariableDescription(key);
+  if (dynamicDescription) {
+    return { text: `Dynamic: ${dynamicDescription}`, muted: true };
+  }
+
+  return { text: 'Not defined', muted: true };
 }
 
 /**

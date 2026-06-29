@@ -118,7 +118,10 @@ export function Resizable({
       id={id}
       className={footerPanelClassName(open)}
       style={{ height }}
+      role="region"
+      aria-label={`${closeLabel} panel`}
       aria-hidden={!open}
+      inert={!open || undefined}
     >
       <ResizeHandle
         orientation="horizontal"

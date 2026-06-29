@@ -80,7 +80,7 @@ export function VariableTable({ variables, onChange, description }: Props): JSX.
           </thead>
           <tbody>
             {variables.map((variable, index) => (
-              <tr className="group" key={index}>
+              <tr key={index}>
                 <td>
                   <Input
                     type="text"
@@ -126,6 +126,7 @@ export function VariableTable({ variables, onChange, description }: Props): JSX.
                     variant="iconDanger"
                     onClick={() => removeVariable(index)}
                     title="Remove"
+                    aria-label={`Remove row ${index + 1}`}
                   >
                     <FaIcon icon={faXmark} className="h-3.5 w-3.5" />
                   </Button>

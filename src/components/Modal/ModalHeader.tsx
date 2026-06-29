@@ -20,6 +20,11 @@ interface Props {
   description?: ReactNode;
 
   /**
+   * Id referenced by the dialog's `aria-describedby` when `description` is set.
+   */
+  descriptionId?: string;
+
+  /**
    * Extra action controls rendered before the Close button.
    */
   headerActions?: ReactNode;
@@ -43,6 +48,7 @@ export function ModalHeader({
   titleId,
   title,
   description,
+  descriptionId,
   headerActions,
   closeDisabled = false,
   onClose
@@ -56,14 +62,18 @@ export function ModalHeader({
         >
           {title}
         </h2>
-        {description ? <p className="m-0 mt-1 text-[14px] text-muted">{description}</p> : null}
+        {description ? (
+          <p id={descriptionId} className="m-0 mt-1 text-[14px] text-muted">
+            {description}
+          </p>
+        ) : null}
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {headerActions}
         <Button
           type="button"
           variant="icon"
-          className="shrink-0 opacity-100"
+          className="shrink-0"
           aria-label="Close"
           disabled={closeDisabled}
           onClick={onClose}

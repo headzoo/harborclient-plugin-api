@@ -28,8 +28,7 @@ interface Props {
  * @param className - Extra classes appended after the overlay preset.
  */
 export function OverlayCloseButton({ label = 'Close', onClose, className }: Props): JSX.Element {
-  const base = 'opacity-100 text-[28px]';
-  const classes = className ? `${base} ${className}` : base;
+  const classes = className ? `text-[28px] ${className}` : 'text-[28px]';
 
   return (
     <Button type="button" variant="icon" className={classes} aria-label={label} onClick={onClose}>

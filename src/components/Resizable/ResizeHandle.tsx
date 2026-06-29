@@ -61,7 +61,7 @@ export function ResizeHandle({
 }: Props): JSX.Element {
   const isHorizontal = orientation === 'horizontal';
   const containerClassName = [
-    'm-0 flex shrink-0 items-center justify-center bg-control p-0 font-inherit text-inherit appearance-none hover:bg-selection/60 app-no-drag',
+    'm-0 flex shrink-0 items-center justify-center bg-control p-0 font-inherit text-inherit hover:bg-selection/60 app-no-drag',
     isHorizontal
       ? 'h-1.5 w-full cursor-row-resize border-b border-separator'
       : 'h-full w-1.5 cursor-col-resize border-r border-separator',
@@ -71,12 +71,12 @@ export function ResizeHandle({
     .join(' ');
 
   return (
-    <button
-      type="button"
+    <div
+      role="separator"
+      tabIndex={0}
       className={containerClassName}
       onMouseDown={onResizeStart}
       onKeyDown={onKeyboardResize}
-      role="separator"
       aria-orientation={orientation}
       aria-label={ariaLabel}
       aria-valuenow={Math.round(value)}
@@ -89,6 +89,6 @@ export function ResizeHandle({
         }
         aria-hidden
       />
-    </button>
+    </div>
   );
 }

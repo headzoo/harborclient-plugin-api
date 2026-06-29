@@ -10,8 +10,12 @@ export {
 export {
   VARIABLE_NAME_CHARS,
   VARIABLE_TOKEN_PATTERN,
+  getVariableTokenAtOffset,
+  getVariableTooltipContent,
   resolveVariable,
   substituteVariables,
   tokenizeVariables,
-  type VariableToken
+  type VariableToken,
+  type VariableTokenMatch,
+  type VariableTooltipContent
 } from './tokens.js';

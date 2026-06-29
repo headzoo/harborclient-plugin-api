@@ -10,6 +10,16 @@ interface ResourceListProps {
    * Additional Tailwind classes merged onto the list element.
    */
   className?: string;
+
+  /**
+   * Accessible name when no visible heading labels the list.
+   */
+  'aria-label'?: string;
+
+  /**
+   * Id of the element that labels this list when using a visible heading.
+   */
+  'aria-labelledby'?: string;
 }
 
 /**
@@ -17,12 +27,23 @@ interface ResourceListProps {
  *
  * @param children - List item elements.
  * @param className - Extra classes appended after the layout preset.
+ * @param aria-label - Accessible name when surrounding context does not name the list.
+ * @param aria-labelledby - Id of a visible heading that names the list.
  */
-export function ResourceList({ children, className }: ResourceListProps): JSX.Element {
+export function ResourceList({
+  children,
+  className,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy
+}: ResourceListProps): JSX.Element {
   const base = 'm-0 flex list-none flex-col gap-2 p-0';
   const classes = className ? `${base} ${className}` : base;
 
-  return <ul className={classes}>{children}</ul>;
+  return (
+    <ul className={classes} aria-label={ariaLabel} aria-labelledby={ariaLabelledBy}>
+      {children}
+    </ul>
+  );
 }
 
 interface ResourceListRowProps {

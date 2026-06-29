@@ -151,16 +151,24 @@ export function FormDataEditor({
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            <th className={`${thClass} w-6 p-0`} />
-            <th className={thClass}>Key</th>
-            <th className={`${thClass} w-24`}>Type</th>
-            <th className={thClass}>Value</th>
+            <th scope="col" className={`${thClass} w-6 p-0`}>
+              <span className="sr-only">Enable</span>
+            </th>
+            <th scope="col" className={thClass}>
+              Key
+            </th>
+            <th scope="col" className={`${thClass} w-24`}>
+              Type
+            </th>
+            <th scope="col" className={thClass}>
+              Value
+            </th>
             <th className={`${thClass} w-7 p-0`} />
           </tr>
         </thead>
         <tbody className="[&_tr:last-child_td]:border-b-0">
           {rows.map((row, index) => (
-            <tr className="group" key={index}>
+            <tr key={index}>
               <td className={`${tdClass} w-6 p-1 text-center`}>
                 <Input
                   type="checkbox"
@@ -228,13 +236,15 @@ export function FormDataEditor({
                             key={filePath}
                             className="inline-flex max-w-full items-center gap-1 rounded-md border border-separator bg-control px-1.5 py-0.5 text-[14px] text-text"
                             title={filePath}
+                            aria-label={filePath}
                           >
                             <span className="truncate">{fileBasename(filePath)}</span>
                             <button
                               type="button"
                               className="inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded border-none bg-transparent text-muted hover:bg-selection hover:text-text app-no-drag"
                               onClick={() => removeFile(index, filePath)}
-                              title="Remove file"
+                              title={`Remove file ${fileBasename(filePath)}`}
+                              aria-label={`Remove file ${fileBasename(filePath)}`}
                             >
                               <FaIcon icon={faXmark} className="h-3 w-3" />
                             </button>
@@ -251,6 +261,7 @@ export function FormDataEditor({
                   variant="iconDanger"
                   onClick={() => removeRow(index)}
                   title="Remove"
+                  aria-label={`Remove row ${index + 1}`}
                 >
                   <FaIcon icon={faXmark} className="h-3.5 w-3.5" />
                 </Button>

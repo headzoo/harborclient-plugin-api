@@ -14,14 +14,17 @@ import {
 } from '@codemirror/view';
 import CodeMirrorImport from '@uiw/react-codemirror';
 import { tags } from '@lezer/highlight';
-import { useEffect, useMemo, useState, createElement } from '@harborclient/sdk/react';
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  createElement
+} from '@harborclient/sdk/react';
 import type { JSX } from 'react';
 import type { CodeEditorSetup, CodeEditorTheme, Variable } from '../../types.js';
-import {
-  getDynamicVariableDescription,
-  resolveVariable,
-  VARIABLE_NAME_CHARS
-} from '../../variables/index.js';
+import { getVariableTooltipContent, VARIABLE_NAME_CHARS } from '../../variables/index.js';
 import { useCodeEditorConfig } from './config.js';
 import { getCodeEditorThemeExtension } from './themes.js';
 
@@ -106,6 +109,16 @@ export interface Props {
    * Id of the element that labels this editor when using `aria-labelledby`.
    */
   'aria-labelledby'?: string;
+
+  /**
+   * When true, marks the editor as failing validation for assistive technologies.
+   */
+  'aria-invalid'?: boolean | 'true' | 'false';
+
+  /**
+   * Ids of elements describing the editor, merged with variable tooltip ids when active.
+   */
+  'aria-describedby'?: string;
 }
 
 const lightHighlight = HighlightStyle.define([
@@ -246,6 +259,173 @@ const variableHighlighter = ViewPlugin.fromClass(
   { decorations: (v) => v.decorations }
 );
 
+interface SelectionTooltipState {
+  key: string;
+  top: number;
+  left: number;
+}
+
+/**
+ * Finds the {{variable}} token at a document position, if any.
+ *
+ * @param doc - CodeMirror document.
+ * @param pos - Character position in the document.
+ * @returns Variable key and token range, or null when not inside a token.
+ */
+function findVariableAtPos(
+  doc: { lineAt: (pos: number) => { from: number; text: string } },
+  pos: number
+): { key: string; start: number; end: number } | null {
+  const line = doc.lineAt(pos);
+  const pattern = new RegExp(`\\{\\{\\s*([${VARIABLE_NAME_CHARS}]+)\\s*\\}\\}`, 'g');
+
+  for (const match of line.text.matchAll(pattern)) {
+    const start = line.from + (match.index ?? 0);
+    const end = start + match[0].length;
+    if (pos < start || pos > end) continue;
+    return { key: match[1], start, end };
+  }
+
+  return null;
+}
+
+/**
+ * Builds DOM content for a variable tooltip.
+ *
+ * @param key - Variable name from the token.
+ * @param variables - Collection-scoped variables for resolution.
+ * @param onEditVariable - Optional callback to open collection settings.
+ */
+function buildVariableTooltipDom(
+  key: string,
+  variables: Variable[],
+  onEditVariable?: () => void
+): HTMLDivElement {
+  const content = getVariableTooltipContent(key, variables);
+  const dom = document.createElement('div');
+  dom.className = 'cm-variable-tooltip';
+
+  const valueEl = document.createElement('div');
+  valueEl.textContent = content.text;
+  if (content.muted) {
+    valueEl.className = 'cm-variable-tooltip-muted';
+  }
+  dom.appendChild(valueEl);
+
+  if (onEditVariable) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Edit value';
+    btn.className = 'cm-variable-tooltip-edit';
+    btn.setAttribute('aria-label', `Edit value for ${key}`);
+    btn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      onEditVariable();
+    });
+    dom.appendChild(btn);
+  }
+
+  return dom;
+}
+
+/**
+ * Joins non-empty element ids into a space-separated `aria-describedby` value.
+ *
+ * @param ids - Candidate element ids.
+ * @returns Merged id string, or undefined when no ids are provided.
+ */
+function mergeDescribedBy(...ids: (string | undefined)[]): string | undefined {
+  const merged = ids.filter((id): id is string => id != null && id !== '');
+  return merged.length > 0 ? merged.join(' ') : undefined;
+}
+
+/**
+ * Sets or clears `aria-describedby` on the CodeMirror content element.
+ *
+ * @param content - Editable `.cm-content` element.
+ * @param getValidationDescribedBy - Returns validation/helper ids from props.
+ * @param tooltipId - Optional variable tooltip id to include while visible.
+ */
+function setContentDescribedBy(
+  content: Element | null | undefined,
+  getValidationDescribedBy: () => string | undefined,
+  tooltipId?: string
+): void {
+  if (!content) return;
+  const describedBy = mergeDescribedBy(getValidationDescribedBy(), tooltipId);
+  if (describedBy) {
+    content.setAttribute('aria-describedby', describedBy);
+  } else {
+    content.removeAttribute('aria-describedby');
+  }
+}
+
+/**
+ * Shows a keyboard-driven tooltip when the caret moves inside a {{variable}} token.
+ *
+ * @param tooltipId - Stable id referenced by `aria-describedby`.
+ * @param onTooltipChange - Callback invoked when tooltip visibility or position changes.
+ * @param getValidationDescribedBy - Returns validation/helper ids from editor props.
+ */
+function variableSelectionTooltip(
+  tooltipId: string,
+  onTooltipChange: (state: SelectionTooltipState | null) => void,
+  getValidationDescribedBy: () => string | undefined
+): ReturnType<typeof EditorView.updateListener.of> {
+  return EditorView.updateListener.of((update) => {
+    if (!update.selectionSet && !update.docChanged) return;
+
+    const content = update.view.dom.querySelector('.cm-content');
+    const pos = update.state.selection.main.head;
+    const match = findVariableAtPos(update.state.doc, pos);
+
+    if (!match) {
+      onTooltipChange(null);
+      setContentDescribedBy(content, getValidationDescribedBy);
+      return;
+    }
+
+    const coords = update.view.coordsAtPos(match.start);
+    if (!coords) {
+      onTooltipChange(null);
+      setContentDescribedBy(content, getValidationDescribedBy);
+      return;
+    }
+
+    onTooltipChange({
+      key: match.key,
+      top: coords.top,
+      left: coords.left + (coords.right - coords.left) / 2
+    });
+    setContentDescribedBy(content, getValidationDescribedBy, tooltipId);
+  });
+}
+
+/**
+ * Dismisses the keyboard tooltip when Escape is pressed.
+ *
+ * @param isOpen - Returns whether the keyboard tooltip is currently visible.
+ * @param onDismiss - Called to hide the keyboard tooltip.
+ * @param getValidationDescribedBy - Returns validation/helper ids from editor props.
+ */
+function variableTooltipEscapeHandler(
+  isOpen: () => boolean,
+  onDismiss: (view: EditorView) => void,
+  getValidationDescribedBy: () => string | undefined
+): ReturnType<typeof EditorView.domEventHandlers> {
+  return EditorView.domEventHandlers({
+    keydown(event, view) {
+      if (event.key === 'Escape' && isOpen()) {
+        event.preventDefault();
+        onDismiss(view);
+        setContentDescribedBy(view.dom.querySelector('.cm-content'), getValidationDescribedBy);
+        return true;
+      }
+      return false;
+    }
+  });
+}
+
 /**
  * Builds a hover tooltip extension for {{variable}} tokens.
  *
@@ -257,54 +437,17 @@ function variableTooltip(
   onEditVariable?: () => void
 ): ReturnType<typeof hoverTooltip> {
   return hoverTooltip((view, pos) => {
-    const line = view.state.doc.lineAt(pos);
-    const pattern = new RegExp(`\\{\\{\\s*([${VARIABLE_NAME_CHARS}]+)\\s*\\}\\}`, 'g');
+    const match = findVariableAtPos(view.state.doc, pos);
+    if (!match) return null;
 
-    for (const match of line.text.matchAll(pattern)) {
-      const start = line.from + (match.index ?? 0);
-      const end = start + match[0].length;
-      if (pos < start || pos > end) continue;
-
-      const key = match[1];
-      const value = resolveVariable(key, variables);
-      const dynamicDescription = getDynamicVariableDescription(key);
-      return {
-        pos: start,
-        end,
-        above: true,
-        create() {
-          const dom = document.createElement('div');
-          dom.className = 'cm-variable-tooltip';
-
-          const valueEl = document.createElement('div');
-          if (value !== undefined) {
-            valueEl.textContent = value;
-          } else if (dynamicDescription) {
-            valueEl.textContent = `Dynamic: ${dynamicDescription}`;
-          } else {
-            valueEl.textContent = 'Not defined';
-            valueEl.className = 'cm-variable-tooltip-muted';
-          }
-          dom.appendChild(valueEl);
-
-          if (onEditVariable) {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.textContent = 'Edit value';
-            btn.className = 'cm-variable-tooltip-edit';
-            btn.addEventListener('mousedown', (e) => {
-              e.preventDefault();
-              onEditVariable();
-            });
-            dom.appendChild(btn);
-          }
-
-          return { dom };
-        }
-      };
-    }
-
-    return null;
+    return {
+      pos: match.start,
+      end: match.end,
+      above: true,
+      create() {
+        return { dom: buildVariableTooltipDom(match.key, variables, onEditVariable) };
+      }
+    };
   });
 }
 
@@ -329,7 +472,9 @@ export function CodeEditor({
   setupOverride,
   id,
   'aria-label': ariaLabel,
-  'aria-labelledby': ariaLabelledBy
+  'aria-labelledby': ariaLabelledBy,
+  'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy
 }: Props): JSX.Element {
   const config = useCodeEditorConfig();
   const resolvedTheme = themeOverride ?? config.theme;
@@ -337,6 +482,15 @@ export function CodeEditor({
   const [isDark, setIsDark] = useState(
     () => window.matchMedia('(prefers-color-scheme: dark)').matches
   );
+  const [selectionTooltip, setSelectionTooltip] = useState<SelectionTooltipState | null>(null);
+  const selectionTooltipRef = useRef(selectionTooltip);
+  selectionTooltipRef.current = selectionTooltip;
+  const setSelectionTooltipRef = useRef(setSelectionTooltip);
+  setSelectionTooltipRef.current = setSelectionTooltip;
+  const ariaDescribedByRef = useRef(ariaDescribedBy);
+  ariaDescribedByRef.current = ariaDescribedBy;
+  const tooltipId = useId();
+  const getValidationDescribedBy = (): string | undefined => ariaDescribedByRef.current;
 
   /**
    * Tracks system dark mode so syntax highlighting matches the active theme.
@@ -377,12 +531,31 @@ export function CodeEditor({
       next.push(StreamLanguage.define(shell));
     }
     if (variables) {
-      next.push(variableHighlighter, variableTooltip(variables, onEditVariable));
+      next.push(
+        variableHighlighter,
+        variableTooltip(variables, onEditVariable),
+        variableSelectionTooltip(
+          tooltipId,
+          (state) => {
+            setSelectionTooltipRef.current(state);
+          },
+          getValidationDescribedBy
+        ),
+        variableTooltipEscapeHandler(
+          () => selectionTooltipRef.current != null,
+          () => {
+            setSelectionTooltipRef.current(null);
+          },
+          getValidationDescribedBy
+        )
+      );
     }
     const contentAttrs: Record<string, string> = {};
     if (id) contentAttrs.id = id;
     if (ariaLabel) contentAttrs['aria-label'] = ariaLabel;
     if (ariaLabelledBy) contentAttrs['aria-labelledby'] = ariaLabelledBy;
+    if (ariaInvalid != null) contentAttrs['aria-invalid'] = String(ariaInvalid);
+    if (ariaDescribedBy) contentAttrs['aria-describedby'] = ariaDescribedBy;
     if (Object.keys(contentAttrs).length > 0) {
       next.push(EditorView.contentAttributes.of(contentAttrs));
     }
@@ -396,7 +569,10 @@ export function CodeEditor({
     completionSource,
     id,
     ariaLabel,
-    ariaLabelledBy
+    ariaLabelledBy,
+    ariaInvalid,
+    ariaDescribedBy,
+    tooltipId
   ]);
 
   /**
@@ -441,6 +617,10 @@ export function CodeEditor({
     ? `overflow-hidden rounded-md bg-control shadow-[inset_0_0.5px_1px_rgba(0,0,0,0.06)] app-no-drag ${className}`
     : `min-h-36 resize-y overflow-hidden rounded-md border border-separator bg-control shadow-[inset_0_0.5px_1px_rgba(0,0,0,0.06)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--mac-accent)_35%,transparent),inset_0_0.5px_1px_rgba(0,0,0,0.06)] app-no-drag ${className}`;
 
+  const selectionTooltipContent = selectionTooltip
+    ? getVariableTooltipContent(selectionTooltip.key, variables ?? [])
+    : null;
+
   return (
     <div className={wrapperClassName}>
       {createElement(CodeMirrorImport, {
@@ -454,6 +634,32 @@ export function CodeEditor({
         minHeight,
         basicSetup
       })}
+      {selectionTooltip && selectionTooltipContent && variables ? (
+        <div
+          id={tooltipId}
+          role="tooltip"
+          className="pointer-events-auto fixed z-50 flex max-w-sm -translate-x-1/2 -translate-y-full flex-col gap-1.5 rounded-md border border-separator bg-surface px-3 py-2 text-[14px] text-text shadow-md app-no-drag"
+          style={{ top: selectionTooltip.top - 4, left: selectionTooltip.left }}
+        >
+          <span className={selectionTooltipContent.muted ? 'text-muted' : undefined}>
+            {selectionTooltipContent.text}
+          </span>
+          {onEditVariable ? (
+            <button
+              type="button"
+              className="self-start text-[14px] text-accent hover:underline"
+              aria-label={`Edit value for ${selectionTooltip.key}`}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                onEditVariable();
+                setSelectionTooltip(null);
+              }}
+            >
+              Edit value
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -16,8 +16,9 @@ export interface Props {
  * Global busy overlay: top progress bar, corner spinner, and wait cursor.
  * Delayed show avoids flashing on fast operations; min-visible avoids flicker.
  *
- * Requires host styles for `body.app-busy` (wait cursor) and `.busy-progress-bar`
- * (progress animation); HarborClient defines these in `styles.css`.
+ * Sets `body.app-busy` and `aria-busy="true"` while visible. Requires host styles
+ * for `body.app-busy` (wait cursor) and `.busy-progress-bar` (progress animation);
+ * HarborClient defines these in `styles.css`.
  */
 export function BusyIndicator({ isBusy }: Props): JSX.Element | null {
   const [visible, setVisible] = useState(false);
@@ -80,12 +81,18 @@ export function BusyIndicator({ isBusy }: Props): JSX.Element | null {
   }, []);
 
   /**
-   * Toggles the document wait cursor while the overlay is visible.
+   * Toggles the document wait cursor and `aria-busy` while the overlay is visible.
    */
   useEffect(() => {
     document.body.classList.toggle('app-busy', visible);
+    if (visible) {
+      document.body.setAttribute('aria-busy', 'true');
+    } else {
+      document.body.removeAttribute('aria-busy');
+    }
     return () => {
       document.body.classList.remove('app-busy');
+      document.body.removeAttribute('aria-busy');
     };
   }, [visible]);
 

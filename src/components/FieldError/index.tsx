@@ -63,7 +63,7 @@ export function FieldError({
   children,
   id,
   spacing = 'field',
-  roleAlert = false,
+  roleAlert = true,
   className
 }: Props): JSX.Element | null {
   if (children == null || children === '') return null;

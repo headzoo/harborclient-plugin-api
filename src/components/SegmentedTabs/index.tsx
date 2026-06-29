@@ -292,6 +292,7 @@ export function SegmentedTabs<T extends string>({
       className={groupClassName}
       role={isRadiogroup ? 'radiogroup' : 'tablist'}
       aria-label={ariaLabel}
+      {...(!isRadiogroup ? { 'aria-orientation': 'horizontal' as const } : {})}
       onKeyDown={handleKeyDown}
     >
       {visibleTabs.map((tab) => {
@@ -316,7 +317,7 @@ export function SegmentedTabs<T extends string>({
                   role: 'tab',
                   id: getTabId(tab.value),
                   'aria-selected': selected,
-                  'aria-controls': getPanelId(tab.value)
+                  ...(context ? { 'aria-controls': getPanelId(tab.value) } : {})
                 })}
           >
             <span className="inline-flex items-center gap-1.5">

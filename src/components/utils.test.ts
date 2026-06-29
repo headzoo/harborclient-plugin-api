@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { resolveTabListKeyAction } from './utils.js';
+import { resolveMenuTypeahead, resolveTabListKeyAction } from './utils.js';
 
 describe('resolveTabListKeyAction', () => {
   it('returns null for unhandled keys', () => {
@@ -28,5 +28,27 @@ describe('resolveTabListKeyAction', () => {
     expect(resolveTabListKeyAction('ArrowLeft', 2, 3, { disabledIndices: [1] })).toBe(0);
     expect(resolveTabListKeyAction('Home', 2, 3, { disabledIndices: [0] })).toBe(1);
     expect(resolveTabListKeyAction('End', 0, 3, { disabledIndices: [2] })).toBe(1);
+  });
+});
+
+describe('resolveMenuTypeahead', () => {
+  const labels = ['Rename', 'Duplicate', 'Delete'];
+
+  it('returns null for non-printable keys', () => {
+    expect(resolveMenuTypeahead(labels, 0, 'Enter', '')).toBeNull();
+    expect(resolveMenuTypeahead(labels, 0, ' ', 'd')).toBeNull();
+  });
+
+  it('matches the next item whose label starts with the typed prefix', () => {
+    expect(resolveMenuTypeahead(labels, 0, 'd', '')).toEqual({ index: 1, buffer: 'd' });
+    expect(resolveMenuTypeahead(labels, 1, 'e', 'd')).toEqual({ index: 2, buffer: 'de' });
+  });
+
+  it('wraps the search from the current index', () => {
+    expect(resolveMenuTypeahead(labels, 2, 'r', '')).toEqual({ index: 0, buffer: 'r' });
+  });
+
+  it('returns null when no label matches the prefix', () => {
+    expect(resolveMenuTypeahead(labels, 0, 'z', '')).toBeNull();
   });
 });

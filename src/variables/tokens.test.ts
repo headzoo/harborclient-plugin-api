@@ -1,6 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 import type { Variable } from '../types.js';
-import { resolveVariable, substituteVariables, tokenizeVariables } from './tokens.js';
+import {
+  getVariableTokenAtOffset,
+  getVariableTooltipContent,
+  resolveVariable,
+  substituteVariables,
+  tokenizeVariables
+} from './tokens.js';
 
 /**
  * Builds a test variable row.
@@ -142,5 +148,58 @@ describe('resolveVariable', () => {
 
   it('returns undefined for unknown keys', () => {
     expect(resolveVariable('missing', [variable('host', 'api.example.com')])).toBeUndefined();
+  });
+});
+
+describe('getVariableTokenAtOffset', () => {
+  const text = 'https://{{host}}/api/{{version}}';
+
+  it('returns the token when offset is inside a variable placeholder', () => {
+    expect(getVariableTokenAtOffset(text, 10)).toEqual({
+      key: 'host',
+      start: 8,
+      end: 16
+    });
+  });
+
+  it('returns null when offset is outside any token', () => {
+    expect(getVariableTokenAtOffset(text, 0)).toBeNull();
+    expect(getVariableTokenAtOffset(text, 7)).toBeNull();
+  });
+
+  it('matches at token start and end boundaries', () => {
+    expect(getVariableTokenAtOffset('{{host}}', 0)?.key).toBe('host');
+    expect(getVariableTokenAtOffset('{{host}}', 8)?.key).toBe('host');
+  });
+
+  it('matches tokens with whitespace around the key', () => {
+    expect(getVariableTokenAtOffset('https://{{ host }}/users', 10)).toEqual({
+      key: 'host',
+      start: 8,
+      end: 18
+    });
+  });
+});
+
+describe('getVariableTooltipContent', () => {
+  it('returns resolved static value without muted styling', () => {
+    expect(getVariableTooltipContent('host', [variable('host', 'api.example.com')])).toEqual({
+      text: 'api.example.com',
+      muted: false
+    });
+  });
+
+  it('returns dynamic description for registered dynamic variables', () => {
+    expect(getVariableTooltipContent('$guid', [])).toEqual({
+      text: 'Dynamic: A uuid-v4 style guid',
+      muted: true
+    });
+  });
+
+  it('returns Not defined for unknown keys', () => {
+    expect(getVariableTooltipContent('missing', [variable('host', 'api.example.com')])).toEqual({
+      text: 'Not defined',
+      muted: true
+    });
   });
 });

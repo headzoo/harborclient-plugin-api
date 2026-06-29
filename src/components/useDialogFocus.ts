@@ -4,6 +4,63 @@ import type { RefObject } from 'react';
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+const inertLockCounts = new WeakMap<Element, number>();
+
+/**
+ * Increments or decrements an inert lock on an element so nested dialogs
+ * do not prematurely restore interactivity on shared siblings.
+ *
+ * @param element - Element to lock or unlock.
+ * @param locked - Whether to apply or release an inert lock.
+ */
+function setInertLocked(element: Element, locked: boolean): void {
+  const count = inertLockCounts.get(element) ?? 0;
+
+  if (locked) {
+    inertLockCounts.set(element, count + 1);
+    (element as HTMLElement).inert = true;
+    return;
+  }
+
+  const next = count - 1;
+  if (next <= 0) {
+    inertLockCounts.delete(element);
+    (element as HTMLElement).inert = false;
+  } else {
+    inertLockCounts.set(element, next);
+  }
+}
+
+/**
+ * Marks sibling elements of the overlay container as inert while the dialog is open.
+ *
+ * @param overlay - Modal overlay root element.
+ * @returns Siblings that received an inert lock from this call.
+ */
+function lockOverlaySiblings(overlay: HTMLElement): Element[] {
+  const parent = overlay.parentElement;
+  if (!parent) return [];
+
+  const locked: Element[] = [];
+  for (const child of parent.children) {
+    if (child === overlay) continue;
+    setInertLocked(child, true);
+    locked.push(child);
+  }
+  return locked;
+}
+
+/**
+ * Releases inert locks previously applied to overlay siblings.
+ *
+ * @param siblings - Sibling elements to unlock.
+ */
+function unlockOverlaySiblings(siblings: Element[]): void {
+  for (const sibling of siblings) {
+    setInertLocked(sibling, false);
+  }
+}
+
 /**
  * Returns visible, enabled focusable descendants of a container, excluding
  * elements inside `aria-hidden` subtrees.
@@ -24,19 +81,22 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 }
 
 /**
- * Traps keyboard focus within a dialog panel and restores focus on unmount.
+ * Traps keyboard focus within a dialog panel, inerts background siblings,
+ * and restores focus on unmount.
  *
- * @param panelRef - Ref attached to the dialog panel element.
+ * @param panelRef - Ref attached to the dialog overlay element.
  */
 export function useDialogFocus(panelRef: RefObject<HTMLElement | null>): void {
   /**
-   * Moves initial focus into the panel, traps Tab/Shift+Tab, and restores
-   * focus to the element that opened the dialog when the panel unmounts.
+   * Moves initial focus into the panel, traps Tab/Shift+Tab, inerts sibling
+   * content, and restores focus to the element that opened the dialog when
+   * the panel unmounts.
    */
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
 
+    const inertedSiblings = lockOverlaySiblings(panel);
     const previousFocus = document.activeElement;
 
     if (!panel.contains(document.activeElement)) {
@@ -82,6 +142,7 @@ export function useDialogFocus(panelRef: RefObject<HTMLElement | null>): void {
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      unlockOverlaySiblings(inertedSiblings);
       if (previousFocus instanceof HTMLElement && document.contains(previousFocus)) {
         previousFocus.focus();
       }

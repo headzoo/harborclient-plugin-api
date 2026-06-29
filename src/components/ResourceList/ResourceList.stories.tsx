@@ -44,7 +44,7 @@ function RowActionsDemo(): ReactElement {
 
 export const WithRows: Story = {
   render: () => (
-    <ResourceList>
+    <ResourceList aria-label="API endpoints">
       <ResourceListRow
         primary={<ResourceListPrimary>Production API</ResourceListPrimary>}
         secondary="https://api.example.com"
@@ -65,7 +65,7 @@ export const WithRows: Story = {
 
 export const Empty: Story = {
   render: () => (
-    <ResourceList>
+    <ResourceList aria-label="Collections">
       <ResourceListEmptyItem>No collections yet.</ResourceListEmptyItem>
     </ResourceList>
   )
@@ -73,7 +73,7 @@ export const Empty: Story = {
 
 export const WrappingRow: Story = {
   render: () => (
-    <ResourceList className="max-w-xs">
+    <ResourceList aria-label="Collections" className="max-w-xs">
       <ResourceListRow
         wrap
         primary={

@@ -31,10 +31,17 @@ export const SectionSpacing: Story = {
   }
 };
 
-export const AsAlert: Story = {
+export const ModalSpacing: Story = {
   args: {
     children: 'Save failed. Check your connection and retry.',
-    spacing: 'modal',
-    roleAlert: true
+    spacing: 'modal'
+  }
+};
+
+export const Silent: Story = {
+  args: {
+    children: 'Optional hint shown only when the field is focused.',
+    spacing: 'field',
+    roleAlert: false
   }
 };

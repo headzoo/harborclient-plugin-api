@@ -111,3 +111,50 @@ export function resolveTabListKeyAction(
   }
   return null;
 }
+
+/**
+ * Result of a menu typeahead key press.
+ */
+export interface MenuTypeaheadResult {
+  /**
+   * Index of the menu item to focus.
+   */
+  index: number;
+
+  /**
+   * Updated typeahead buffer after appending the typed character.
+   */
+  buffer: string;
+}
+
+/**
+ * Resolves a printable key to the next menu item whose label matches the
+ * accumulated typeahead prefix. Search starts at the item after the current
+ * index and wraps circularly.
+ *
+ * @param labels - Visible menu item labels.
+ * @param currentIndex - Index of the currently focused item.
+ * @param key - Keyboard event key value.
+ * @param buffer - Accumulated typeahead characters from recent key presses.
+ * @returns Target index and updated buffer when matched, or null when unhandled.
+ */
+export function resolveMenuTypeahead(
+  labels: string[],
+  currentIndex: number,
+  key: string,
+  buffer: string
+): MenuTypeaheadResult | null {
+  if (labels.length === 0 || key.length !== 1 || key === ' ') return null;
+
+  const newBuffer = buffer + key;
+  const prefix = newBuffer.toLowerCase();
+
+  for (let offset = 1; offset <= labels.length; offset++) {
+    const index = (currentIndex + offset) % labels.length;
+    if (labels[index].toLowerCase().startsWith(prefix)) {
+      return { index, buffer: newBuffer };
+    }
+  }
+
+  return null;
+}

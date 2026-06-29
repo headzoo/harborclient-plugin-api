@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FaIcon } from '../FaIcon/index.js';
 import { Button } from './index.js';
 
 const meta = {
@@ -51,5 +53,21 @@ export const Disabled: Story = {
     children: 'Disabled',
     variant: 'primary',
     disabled: true
+  }
+};
+
+export const Icon: Story = {
+  args: {
+    variant: 'icon',
+    'aria-label': 'Close',
+    children: <FaIcon icon={faXmark} className="h-4 w-4" />
+  }
+};
+
+export const IconDanger: Story = {
+  args: {
+    variant: 'iconDanger',
+    'aria-label': 'Remove',
+    children: <FaIcon icon={faTrash} className="h-3.5 w-3.5" />
   }
 };

@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from '@harborclient/sdk/react';
+import { useEffect, useId, useMemo, useRef, useState } from '@harborclient/sdk/react';
 import type { JSX, KeyboardEvent, MouseEvent } from 'react';
 import type { Variable } from '../../types.js';
 import {
   getDynamicVariableDescription,
+  getVariableTokenAtOffset,
+  getVariableTooltipContent,
   resolveVariable,
   tokenizeVariables
 } from '../../variables/index.js';
@@ -99,6 +101,7 @@ export function VariableInput({
   const spanRefs = useRef<Map<number, HTMLSpanElement>>(new Map());
   const hideTimer = useRef<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const tooltipId = useId();
 
   /**
    * Splits the input value into plain text and {{variable}} token spans for highlighting.
@@ -140,6 +143,58 @@ export function VariableInput({
   };
 
   /**
+   * Shows a tooltip for a variable token at the given screen position.
+   *
+   * @param key - Variable name from the token.
+   * @param top - Top coordinate for tooltip placement.
+   * @param left - Horizontal center coordinate for tooltip placement.
+   */
+  const showTooltipForKey = (key: string, top: number, left: number): void => {
+    setTooltip({
+      key,
+      value: resolveVariable(key, variables),
+      dynamicDescription: getDynamicVariableDescription(key),
+      top,
+      left
+    });
+  };
+
+  /**
+   * Updates the tooltip based on the current text caret position.
+   */
+  const updateTooltipFromCaret = (): void => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const offset = input.selectionStart ?? 0;
+    const match = getVariableTokenAtOffset(value, offset);
+    if (!match) {
+      setTooltip(null);
+      return;
+    }
+
+    let tokenIndex = -1;
+    let position = 0;
+    for (const [index, token] of tokens.entries()) {
+      if (token.key && position === match.start) {
+        tokenIndex = index;
+        break;
+      }
+      position += token.text.length;
+    }
+
+    const span = tokenIndex >= 0 ? spanRefs.current.get(tokenIndex) : undefined;
+    if (span) {
+      const rect = span.getBoundingClientRect();
+      showTooltipForKey(match.key, rect.top, rect.left + rect.width / 2);
+      return;
+    }
+
+    const rect = input.getBoundingClientRect();
+    showTooltipForKey(match.key, rect.top, rect.left + rect.width / 2);
+  };
+
+  /**
    * Shows a tooltip when the pointer is over a variable token span.
    *
    * @param e - Mouse move event from the input.
@@ -160,19 +215,48 @@ export function VariableInput({
         e.clientY >= rect.top &&
         e.clientY <= rect.bottom
       ) {
-        setTooltip({
-          key: token.key,
-          value: resolveVariable(token.key, variables),
-          dynamicDescription: getDynamicVariableDescription(token.key),
-          top: rect.top,
-          left: rect.left + rect.width / 2
-        });
+        showTooltipForKey(token.key, rect.top, rect.left + rect.width / 2);
         return;
       }
     }
 
     setTooltip(null);
   };
+
+  /**
+   * Handles keyboard events on the input, including tooltip dismissal.
+   *
+   * @param event - Keyboard event from the input.
+   */
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (event.key === 'Escape' && tooltip) {
+      event.preventDefault();
+      setTooltip(null);
+      return;
+    }
+
+    onKeyDown?.(event);
+  };
+
+  /**
+   * Updates the tooltip after keyboard navigation moves the caret.
+   *
+   * @param event - Keyboard event from the input.
+   */
+  const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (
+      event.key === 'ArrowLeft' ||
+      event.key === 'ArrowRight' ||
+      event.key === 'ArrowUp' ||
+      event.key === 'ArrowDown' ||
+      event.key === 'Home' ||
+      event.key === 'End'
+    ) {
+      updateTooltipFromCaret();
+    }
+  };
+
+  const tooltipContent = tooltip ? getVariableTooltipContent(tooltip.key, variables) : null;
 
   return (
     <div
@@ -213,35 +297,42 @@ export function VariableInput({
         variant="plain"
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
+        aria-describedby={tooltip ? tooltipId : undefined}
         className={`relative w-full min-w-0 border-none bg-transparent px-2 py-1.5 text-[14px] text-transparent caret-text focus-visible:shadow-none ${className}`}
         type="text"
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={onKeyDown}
+        onChange={(e) => {
+          onChange(e.target.value);
+          queueMicrotask(updateTooltipFromCaret);
+        }}
+        onFocus={updateTooltipFromCaret}
+        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyUp}
+        onSelect={updateTooltipFromCaret}
+        onClick={updateTooltipFromCaret}
         onScroll={syncScroll}
         onMouseMove={handleMouseMove}
         onMouseLeave={scheduleHide}
       />
 
-      {tooltip && (
+      {tooltip && tooltipContent && (
         <div
+          id={tooltipId}
+          role="tooltip"
           className="pointer-events-auto fixed z-50 flex max-w-sm -translate-x-1/2 -translate-y-full flex-col gap-1.5 rounded-md border border-separator bg-surface px-3 py-2 text-[14px] text-text shadow-md"
           style={{ top: tooltip.top - 4, left: tooltip.left }}
           onMouseEnter={cancelHide}
           onMouseLeave={() => setTooltip(null)}
         >
-          {tooltip.value !== undefined ? (
-            tooltip.value
-          ) : tooltip.dynamicDescription ? (
-            <span className="text-muted">Dynamic: {tooltip.dynamicDescription}</span>
-          ) : (
-            <span className="text-muted">Not defined</span>
-          )}
+          <span className={tooltipContent.muted ? 'text-muted' : undefined}>
+            {tooltipContent.text}
+          </span>
           {onEditVariable && (
             <button
               type="button"
               className="self-start text-[14px] text-accent hover:underline app-no-drag"
+              aria-label={`Edit value for ${tooltip.key}`}
               onClick={() => {
                 onEditVariable();
                 setTooltip(null);
