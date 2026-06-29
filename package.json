@@ -1,6 +1,6 @@
 {
   "name": "@harborclient/sdk",
-  "version": "0.6.12",
+  "version": "0.6.13",
   "description": "TypeScript SDK for HarborClient plugin development.",
   "keywords": [
     "harborclient",
@@ -100,6 +100,12 @@
       "import": "./dist/runtime/store.js",
       "require": "./dist/runtime/store.js",
       "default": "./dist/runtime/store.js"
+    },
+    "./view-host": {
+      "types": "./dist/runtime/view-host/index.d.ts",
+      "import": "./dist/runtime/view-host/index.js",
+      "require": "./dist/runtime/view-host/index.js",
+      "default": "./dist/runtime/view-host/index.js"
     },
     "./signing": {
       "types": "./dist/signing/index.d.ts",
