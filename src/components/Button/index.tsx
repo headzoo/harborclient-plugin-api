@@ -34,20 +34,16 @@ export type ButtonProps =
   | (BaseProps & { variant: IconButtonVariant } & AccessibleName)
   | (BaseProps & { variant?: Exclude<ButtonVariant, IconButtonVariant> });
 
+const BUTTON_BASE = 'inline-flex cursor-pointer items-center rounded-md app-no-drag';
+
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary:
-    'inline-flex min-h-[34px] cursor-pointer items-center justify-center rounded-md border border-transparent bg-accent px-3 py-1 text-[15px] font-medium text-white shadow-sm hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 app-no-drag',
-  secondary:
-    'inline-flex min-h-[34px] cursor-pointer items-center justify-center rounded-md border border-separator bg-control px-3 py-1 text-[15px] text-text shadow-sm hover:bg-selection disabled:cursor-not-allowed disabled:opacity-50 app-no-drag',
-  primaryDanger:
-    'inline-flex min-h-[34px] cursor-pointer items-center justify-center rounded-md border border-transparent bg-danger px-3 py-1 text-[15px] font-medium text-white shadow-sm hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 app-no-drag',
-  secondaryDanger:
-    'inline-flex min-h-[34px] cursor-pointer items-center justify-center rounded-md border border-separator bg-control px-3 py-1 text-[15px] text-danger shadow-sm hover:bg-danger/15 disabled:cursor-not-allowed disabled:opacity-50 app-no-drag',
-  toolbar:
-    'inline-flex min-h-[34px] cursor-pointer items-center rounded-md border-none bg-transparent px-2 py-1 text-[15px] hover:bg-selection app-no-drag',
-  icon: 'inline-flex size-[30px] shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-muted hover:bg-selection hover:text-text app-no-drag',
-  iconDanger:
-    'inline-flex size-[30px] shrink-0 cursor-pointer items-center justify-center rounded-md border-none bg-transparent text-muted hover:bg-danger/15 hover:text-danger app-no-drag'
+  primary: `${BUTTON_BASE} min-h-[32px] justify-center border border-transparent bg-accent px-3 py-1 text-[15px] font-medium text-white shadow-sm hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50`,
+  secondary: `${BUTTON_BASE} min-h-[32px] justify-center border border-separator bg-control px-3 py-1 text-[15px] text-text shadow-sm hover:bg-selection disabled:cursor-not-allowed disabled:opacity-50`,
+  primaryDanger: `${BUTTON_BASE} min-h-[32px] justify-center border border-transparent bg-danger px-3 py-1 text-[15px] font-medium text-white shadow-sm hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50`,
+  secondaryDanger: `${BUTTON_BASE} min-h-[32px] justify-center border border-separator bg-control px-3 py-1 text-[15px] text-danger shadow-sm hover:bg-danger/15 disabled:cursor-not-allowed disabled:opacity-50`,
+  toolbar: `${BUTTON_BASE} min-h-[32px] border-none bg-transparent px-2 py-1 text-[15px] hover:bg-selection`,
+  icon: `${BUTTON_BASE} size-[30px] shrink-0 justify-center border-none bg-transparent text-muted hover:bg-selection hover:text-text`,
+  iconDanger: `${BUTTON_BASE} size-[30px] shrink-0 justify-center border-none bg-transparent text-muted hover:bg-danger/15 hover:text-danger`
 };
 
 /**
