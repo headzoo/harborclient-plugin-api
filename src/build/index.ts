@@ -123,9 +123,9 @@ export async function buildRenderer(options: BuildRendererOptions = {}): Promise
     ...(jsxRuntime === 'none'
       ? {}
       : {
-        jsx: 'automatic' as const,
-        jsxImportSource: '@harborclient/sdk'
-      })
+          jsx: 'automatic' as const,
+          jsxImportSource: '@harborclient/sdk'
+        })
   };
 
   if (watch) {
