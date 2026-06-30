@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
-import { byteLength, randomId, truncateBody, truncateToBytes } from './runtime-utils.js';
+import {
+  byteLength,
+  createLogger,
+  randomId,
+  truncateBody,
+  truncateToBytes
+} from './runtime-utils.js';
 
 const originalTextEncoder = globalThis.TextEncoder;
 const originalCrypto = globalThis.crypto;
@@ -123,5 +129,97 @@ describe('truncateBody', () => {
       body: '01234…',
       truncated: true
     });
+  });
+});
+
+describe('createLogger', () => {
+  it('prefixes messages with [pluginId]', () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const logger = createLogger('my-plugin');
+
+    logger.info('hello');
+
+    expect(logSpy).toHaveBeenCalledWith('[my-plugin]', 'hello');
+    logSpy.mockRestore();
+  });
+
+  it('filters messages below the active level', () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const logger = createLogger('my-plugin', { level: 'warn' });
+
+    logger.debug('hidden');
+    logger.info('hidden');
+    logger.warn('visible');
+
+    expect(logSpy).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith('[my-plugin]', 'visible');
+    logSpy.mockRestore();
+    warnSpy.mockRestore();
+  });
+
+  it('updates the active level via setLevel', () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const logger = createLogger('my-plugin');
+
+    logger.info('before');
+    logger.setLevel('silent');
+    logger.info('after');
+
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledWith('[my-plugin]', 'before');
+    logSpy.mockRestore();
+  });
+
+  it('suppresses all output at silent level', () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const logger = createLogger('my-plugin', { level: 'silent' });
+
+    logger.debug('a');
+    logger.info('b');
+    logger.warn('c');
+    logger.error('d');
+
+    expect(logSpy).not.toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  it('routes warn and error through console.warn and console.error when available', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const logger = createLogger('my-plugin', { level: 'debug' });
+
+    logger.warn('warned');
+    logger.error('failed');
+
+    expect(warnSpy).toHaveBeenCalledWith('[my-plugin]', 'warned');
+    expect(errorSpy).toHaveBeenCalledWith('[my-plugin]', 'failed');
+    warnSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  it('falls back to console.log when console.warn and console.error are unavailable', () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    // @ts-expect-error — exercise SES main-runtime fallback
+    console.warn = undefined;
+    // @ts-expect-error — exercise SES main-runtime fallback
+    console.error = undefined;
+
+    const logger = createLogger('my-plugin', { level: 'debug' });
+    logger.warn('warned');
+    logger.error('failed');
+
+    expect(logSpy).toHaveBeenCalledWith('[my-plugin]', 'warned');
+    expect(logSpy).toHaveBeenCalledWith('[my-plugin]', 'failed');
+
+    console.warn = originalWarn;
+    console.error = originalError;
+    logSpy.mockRestore();
   });
 });

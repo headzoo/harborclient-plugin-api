@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Add `@harborclient/sdk/react-dom` with host-delegated `createPortal` for plugin portals.
+- Add `portalToBody` helper in `@harborclient/sdk/components` for modals that must escape overflow-hidden plugin webview containers.
+
 - Add `registerTheme(hc, theme)` and `defineTheme(theme)` helpers for theme plugins — `registerTheme` registers a theme and pushes its disposable onto `hc.subscriptions`.
 - Add `requestKey` to `RequestTabContext` and `ResponseTabContext` — stable per-request identifier for namespacing persistent plugin state (`req:<id>` for saved requests, `METHOD url` fallback for unsaved tabs).
 

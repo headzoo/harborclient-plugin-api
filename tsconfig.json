@@ -15,7 +15,8 @@
     "target": "ES2022",
     "paths": {
       "@harborclient/sdk/jsx-runtime": ["./src/runtime/jsx-runtime.d.ts"],
-      "@harborclient/sdk/react": ["./src/runtime/react.d.ts"]
+      "@harborclient/sdk/react": ["./src/runtime/react.d.ts"],
+      "@harborclient/sdk/react-dom": ["./src/runtime/react-dom.d.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

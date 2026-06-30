@@ -38,6 +38,7 @@ export type { Props as KeyValueEditorProps } from './KeyValueEditor/index.js';
 export { MethodSelect } from './MethodSelect/index.js';
 export { Modal, ModalFooter, ModalFormLayout } from './Modal/index.js';
 export { ModalHeader } from './Modal/ModalHeader.js';
+export { portalToBody } from './portalToBody.js';
 export { OverlayCloseButton } from './OverlayCloseButton/index.js';
 export { Page } from './Page/index.js';
 export { PageHeader } from './PageHeader/index.js';

@@ -46,8 +46,57 @@ Shared helpers ship as subpath exports (requires `@harborclient/sdk` **0.3.1+**)
 ```typescript
 import { resolveRequest } from '@harborclient/sdk/http';
 import { methodColorClass, formatRelativeTime } from '@harborclient/sdk/ui';
-import { mergeById, createCappedList } from '@harborclient/sdk/storage';
+import {
+  mergeById,
+  createCappedList,
+  asRecord,
+  str,
+  num,
+  bool,
+  oneOf,
+  recordOf
+} from '@harborclient/sdk/storage';
 import { copyToClipboard } from '@harborclient/sdk/clipboard';
 import { randomId, truncateBody } from '@harborclient/sdk/runtime-utils';
 import { createExternalStore } from '@harborclient/sdk/store';
 ```
+
+## Plugin build and tooling baseline
+
+Requires `@harborclient/sdk` **0.7.0+**. Shared config reduces drift across plugins.
+
+### Renderer build (`@harborclient/sdk/build`)
+
+Add `scripts/build.mjs`:
+
+```javascript
+import { buildRenderer } from '@harborclient/sdk/build';
+
+await buildRenderer({
+  jsxRuntime: 'runtime', // 'host' | 'runtime' | 'automatic' | 'none'
+  watch: process.argv.includes('--watch')
+});
+```
+
+Point `package.json` at `node scripts/build.mjs` (and `node scripts/build.mjs --watch` for dev).
+
+Use `jsxRuntime: 'host'` when bundling third-party React libraries (CodeMirror, Font Awesome). Use `nodeBuiltinStubsPlugin(['path', 'fs'])` from the same export when a dependency imports unused Node built-ins (see the dotenv plugin).
+
+### TypeScript (`@harborclient/sdk/tsconfig.base.json`)
+
+```json
+{
+  "extends": "@harborclient/sdk/tsconfig.base.json",
+  "include": ["src"]
+}
+```
+
+### ESLint (`@harborclient/sdk/eslint`)
+
+`eslint.config.mjs`:
+
+```javascript
+export { default } from '@harborclient/sdk/eslint';
+```
+
+Your plugin still needs `eslint` as a devDependency; the preset pulls shared rules from the SDK.

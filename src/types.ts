@@ -425,6 +425,14 @@ export interface RequestTabContext {
    * Empty variable values fall back to each variable's defaultValue (same as Send).
    */
   variables: Record<string, string>;
+
+  /**
+   * Stable per-request identifier for namespacing persistent plugin state.
+   *
+   * Saved requests use `req:<id>` and remain stable across edits and restarts.
+   * Unsaved tabs fall back to a best-effort `METHOD url` fingerprint.
+   */
+  requestKey: string;
 }
 
 /**
@@ -457,6 +465,14 @@ export interface ResponseTabContext {
    * Last response, or `null` when no response exists yet.
    */
   response: HttpResponse | null;
+
+  /**
+   * Stable per-request identifier for namespacing persistent plugin state.
+   *
+   * Saved requests use `req:<id>` and remain stable across edits and restarts.
+   * Unsaved tabs fall back to a best-effort `METHOD url` fingerprint.
+   */
+  requestKey: string;
 }
 
 /**

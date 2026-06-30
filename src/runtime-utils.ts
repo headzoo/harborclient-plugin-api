@@ -100,3 +100,130 @@ export function truncateBody(
     truncated: true
   };
 }
+
+/**
+ * Minimum log level emitted by {@link createLogger}.
+ *
+ * Messages below the active level are suppressed. `silent` suppresses all output.
+ */
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+
+/**
+ * Plugin-scoped logger with consistent `[pluginId]` prefixing and level control.
+ *
+ * Safe in the SES plugin main runtime where only `console`, `Date`, and `Math`
+ * globals are available.
+ */
+export interface Logger {
+  /**
+   * Logs a debug message when the active level is `debug`.
+   *
+   * @param args - Values forwarded to the console after the prefix.
+   */
+  debug(...args: unknown[]): void;
+
+  /**
+   * Logs an informational message when the active level is `debug` or `info`.
+   *
+   * @param args - Values forwarded to the console after the prefix.
+   */
+  info(...args: unknown[]): void;
+
+  /**
+   * Logs a warning when the active level is below `error`.
+   *
+   * @param args - Values forwarded to the console after the prefix.
+   */
+  warn(...args: unknown[]): void;
+
+  /**
+   * Logs an error when the active level is not `silent`.
+   *
+   * @param args - Values forwarded to the console after the prefix.
+   */
+  error(...args: unknown[]): void;
+
+  /**
+   * Changes the minimum log level for subsequent calls.
+   *
+   * @param level - New minimum level.
+   */
+  setLevel(level: LogLevel): void;
+}
+
+const LOG_LEVEL_RANK: Record<LogLevel, number> = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3,
+  silent: 4
+};
+
+/**
+ * Creates a plugin-scoped logger that prefixes every message with `[pluginId]`.
+ *
+ * Routes through `console` only so the logger works in both the renderer and
+ * the SES-hardened main runtime. When `console.warn` or `console.error` are
+ * unavailable, falls back to `console.log`.
+ *
+ * @param pluginId - Manifest id used as the log prefix.
+ * @param options - Optional initial configuration.
+ * @param options.level - Minimum level to emit. Defaults to `info`.
+ * @returns Logger with level-filtered `debug`, `info`, `warn`, and `error` methods.
+ */
+export function createLogger(pluginId: string, options?: { level?: LogLevel }): Logger {
+  const prefix = `[${pluginId}]`;
+  let level: LogLevel = options?.level ?? 'info';
+
+  /**
+   * Emits a message when its severity meets the active level threshold.
+   *
+   * @param messageLevel - Severity of the message being logged.
+   * @param write - Console method to invoke when the message is not suppressed.
+   * @param args - Values forwarded after the prefix.
+   */
+  function log(
+    messageLevel: LogLevel,
+    write: (...values: unknown[]) => void,
+    ...args: unknown[]
+  ): void {
+    if (LOG_LEVEL_RANK[messageLevel] < LOG_LEVEL_RANK[level]) {
+      return;
+    }
+    write(prefix, ...args);
+  }
+
+  const consoleLog = (...values: unknown[]): void => {
+    console.log(...values);
+  };
+
+  return {
+    debug(...args: unknown[]): void {
+      log('debug', consoleLog, ...args);
+    },
+    info(...args: unknown[]): void {
+      log('info', consoleLog, ...args);
+    },
+    warn(...args: unknown[]): void {
+      const write =
+        typeof console.warn === 'function'
+          ? (...values: unknown[]): void => {
+              console.warn(...values);
+            }
+          : consoleLog;
+      log('warn', write, ...args);
+    },
+    error(...args: unknown[]): void {
+      const write =
+        typeof console.error === 'function'
+          ? (...values: unknown[]): void => {
+              console.error(...values);
+            }
+          : consoleLog;
+      log('error', write, ...args);
+    },
+    setLevel(nextLevel: LogLevel): void {
+      level = nextLevel;
+    }
+  };
+}

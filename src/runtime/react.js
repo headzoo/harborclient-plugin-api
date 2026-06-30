@@ -45,9 +45,40 @@ export function useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot) 
   return hook('useSyncExternalStore')(subscribe, getSnapshot, getServerSnapshot);
 }
 
-/** @type {typeof import('react').forwardRef} */
+/**
+ * Defers host React lookup until render so module-level `React.forwardRef(...)`
+ * calls (e.g. from @fortawesome/react-fontawesome) work before activate().
+ *
+ * @type {typeof import('react').forwardRef}
+ */
 export function forwardRef(render) {
-  return hook('forwardRef')(render);
+  /** @type {ReturnType<typeof import('react').forwardRef> | null} */
+  let forwarded = null;
+
+  /**
+   * Lazily wraps the render function with host React.forwardRef on first render.
+   *
+   * @param {Record<string, unknown>} props - Component props.
+   * @param {import('react').Ref<unknown>} ref - Ref forwarded from the parent.
+   * @returns {import('react').ReactElement}
+   */
+  function LazyForwardRef(props, ref) {
+    const react = requireHostReact();
+    if (forwarded === null) {
+      forwarded = react.forwardRef(render);
+    }
+    return react.createElement(forwarded, { ...props, ref });
+  }
+
+  const displayName = render.displayName ?? render.name ?? 'Component';
+  LazyForwardRef.displayName = `ForwardRef(${displayName})`;
+
+  return LazyForwardRef;
+}
+
+/** @type {typeof import('react').useImperativeHandle} */
+export function useImperativeHandle(ref, create, deps) {
+  return hook('useImperativeHandle')(ref, create, deps);
 }
 
 /** @type {typeof import('react').cloneElement} */
@@ -84,3 +115,40 @@ export function useLayoutEffect(effect, deps) {
 export function createElement(type, props, ...children) {
   return hook('createElement')(type, props, ...children);
 }
+
+/**
+ * Named SDK React exports used as the Proxy target for the default export.
+ */
+const reactNamespace = {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+  forwardRef,
+  useImperativeHandle,
+  cloneElement,
+  isValidElement,
+  createContext,
+  useContext,
+  useId,
+  useLayoutEffect,
+  createElement
+};
+
+/**
+ * Default React namespace for `import React from 'react'` when aliasing bare
+ * `react` to `@harborclient/sdk/react`. Named exports are served from the SDK;
+ * other properties fall back to the installed host React instance.
+ */
+const defaultExport = new Proxy(reactNamespace, {
+  get(target, prop, receiver) {
+    if (prop in target) {
+      return Reflect.get(target, prop, receiver);
+    }
+    return requireHostReact()[prop];
+  }
+});
+
+export default defaultExport;

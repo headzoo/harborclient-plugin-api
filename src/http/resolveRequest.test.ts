@@ -34,7 +34,8 @@ describe('resolveRequest', () => {
         bearer: { token: '{{token}}' }
       },
       collectionHeaders: [{ key: 'Accept', value: 'application/json', enabled: true }],
-      variables: { base: 'https://api.test', token: 'secret' }
+      variables: { base: 'https://api.test', token: 'secret' },
+      requestKey: 'POST https://api.test/users'
     };
     const resolved = resolveRequest(context);
     expect(resolved.url).toBe('https://api.test/users?page=1');
