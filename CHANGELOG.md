@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.7.0 - 2026-06-30
+
 - Add `registerTheme(hc, theme)` and `defineTheme(theme)` helpers for theme plugins — `registerTheme` registers a theme and pushes its disposable onto `hc.subscriptions`.
 - Add `requestKey` to `RequestTabContext` and `ResponseTabContext` — stable per-request identifier for namespacing persistent plugin state (`req:<id>` for saved requests, `METHOD url` fallback for unsaved tabs).
 
