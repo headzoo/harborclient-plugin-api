@@ -136,6 +136,7 @@ The `contributes` block declares where your plugin can appear. Each entry's `id`
 | `sidebarPanels`          | `registerSidebarPanel`          | Switchable left sidebar destination                   |
 | `sidebarSections`        | `registerSidebarSection`        | Collapsible block inside the scrollable sidebar       |
 | `mainViews`              | `registerMainView`              | Full main-area overlay (Team Hubs pattern)            |
+| `modals`                 | `registerModal`                 | Application-root modal overlay                        |
 | `requestTabs`            | `registerRequestTab`            | Request editor segmented tabs                         |
 | `responseTabs`           | `registerResponseTab`           | Response viewer tabs                                  |
 | `collectionSettingsTabs` | `registerCollectionSettingsTab` | Collection settings segmented tabs                    |

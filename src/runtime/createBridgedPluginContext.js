@@ -12,6 +12,9 @@ import { setHostReact } from './reactHost.js';
 /** @type {Map<string, Set<(...args: unknown[]) => void | Promise<void>>>} */
 const commandHandlers = new Map();
 
+/** Plugin id prefix for built-in HarborClient host commands executed in the renderer. */
+const HOST_COMMAND_OWNER = 'harborclient';
+
 /**
  * Parses a view-host role string into agent vs view contribution id.
  *
@@ -261,6 +264,10 @@ export function createBridgedPluginContext({ pluginId, mode, contributionId, rea
           await executeLocalPluginCommand(ownerId, commandId, ...args);
           return;
         }
+        if (ownerId === HOST_COMMAND_OWNER) {
+          await bridgeInvoke('commands.execute', { pluginId: ownerId, commandId, args });
+          return;
+        }
         await bridgeInvoke('commands.executeRemote', { pluginId: ownerId, commandId, args });
       }
     },
@@ -349,6 +356,18 @@ export function createBridgedPluginContext({ pluginId, mode, contributionId, rea
           view.id,
           { id: `plugin:${pluginId}:${view.id}`, title: view.title, contributionId: view.id },
           view.Component
+        );
+      },
+      registerModal: (modal) => {
+        assertManifestContribution('modals', modal.id);
+        if (!canRegisterUi()) {
+          return noopDisposable();
+        }
+        return registerUiContribution(
+          'modals',
+          modal.id,
+          { id: `plugin:${pluginId}:${modal.id}`, title: modal.title, contributionId: modal.id },
+          modal.Component
         );
       },
       registerRequestTab: (tab) => {
@@ -517,15 +536,23 @@ export function createBridgedPluginContext({ pluginId, mode, contributionId, rea
       showToast: (message, options) => {
         assertUi();
         void bridgeInvoke('ui.showToast', { message, options });
+      },
+      openModal: (modalId, context) => {
+        assertUi();
+        void bridgeInvoke('ui.openModal', { modalId, context });
+      },
+      closeModal: (modalId) => {
+        assertUi();
+        void bridgeInvoke('ui.closeModal', { modalId });
       }
     },
     http: {
       onAfterSend: (handler) => {
         assertPermission('http');
-        if (!isAgent) {
-          return noopDisposable();
-        }
-        const unsubscribe = bridgeOn('http.afterSend', handler);
+        const unsubscribe = bridgeOn('http.afterSend', (payload) => {
+          const { request, response } = payload ?? {};
+          return handler(request, response);
+        });
         return { dispose: unsubscribe };
       }
     },
@@ -631,7 +658,10 @@ export function mountContributionView({
   let currentContext = null;
 
   const needsContext =
-    kind === 'requestTabs' || kind === 'responseTabs' || kind === 'collectionSettingsTabs';
+    kind === 'requestTabs' ||
+    kind === 'responseTabs' ||
+    kind === 'collectionSettingsTabs' ||
+    kind === 'modals';
 
   const reactRoot = reactDom.createRoot(root);
 
@@ -649,6 +679,153 @@ export function mountContributionView({
       : react.createElement(Component);
     reactRoot.render(element);
   };
+
+  /** @type {Set<string>} */
+  const FILL_SURFACE_KINDS = new Set([
+    'footerPanels',
+    'statusBarItems',
+    'requestTabs',
+    'responseTabs',
+    'collectionSettingsTabs',
+    'modals',
+    'mainViews'
+  ]);
+
+  if (FILL_SURFACE_KINDS.has(kind)) {
+    document.body.classList.add('plugin-surface-fill');
+  }
+
+  if (slot === 'headerActions') {
+    document.body.classList.add('plugin-surface-header-actions');
+    document.documentElement.classList.add('plugin-surface-header-actions');
+    root.style.display = 'inline-flex';
+    root.style.width = 'fit-content';
+    root.style.maxWidth = '100%';
+    root.style.overflow = 'hidden';
+  }
+
+  /** @type {ResizeObserver | null} */
+  let resizeObserver = null;
+  /** @type {number | null} */
+  let resizeFrame = null;
+
+  if (slot === 'content' && !FILL_SURFACE_KINDS.has(kind)) {
+    /**
+     * Reports the full content height so the host webview can grow without an inner scrollbar.
+     */
+    const reportDocumentHeight = () => {
+      const height = Math.ceil(
+        Math.max(root.scrollHeight, root.getBoundingClientRect().height, root.offsetHeight)
+      );
+      if (height <= 0) {
+        return;
+      }
+      if (resizeFrame != null) {
+        cancelAnimationFrame(resizeFrame);
+      }
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = requestAnimationFrame(() => {
+          resizeFrame = null;
+          void bridgeInvoke('view.reportSize', { height, slot: 'content' });
+        });
+      });
+    };
+
+    resizeObserver = new ResizeObserver(() => {
+      reportDocumentHeight();
+    });
+    resizeObserver.observe(root);
+
+    /**
+     * Re-reports after React paints so context-deferred tabs measure their full form height.
+     */
+    const renderAndReport = () => {
+      render();
+      reportDocumentHeight();
+    };
+
+    const unsubscribe = bridgeOn('view.context', (payload) => {
+      currentContext = payload;
+      renderAndReport();
+    });
+
+    if (needsContext) {
+      // The host pushes context on mount/dom-ready, which can race ahead of this
+      // subscription, so pull the current snapshot now that we are listening.
+      void bridgeInvoke('view.getContext')
+        .then((context) => {
+          if (context != null && currentContext == null) {
+            currentContext = context;
+            renderAndReport();
+          }
+        })
+        .catch(() => {});
+    }
+
+    renderAndReport();
+
+    return () => {
+      unsubscribe();
+      resizeObserver?.disconnect();
+      if (resizeFrame != null) {
+        cancelAnimationFrame(resizeFrame);
+      }
+    };
+  }
+
+  if (slot === 'headerActions') {
+    /**
+     * Reports header action content size so the host webview matches the control.
+     */
+    const reportHeaderActionsSize = () => {
+      const measureTarget = root.firstElementChild ?? root;
+      const width = Math.ceil(
+        Math.max(
+          measureTarget.scrollWidth,
+          measureTarget.getBoundingClientRect().width,
+          measureTarget.offsetWidth
+        )
+      );
+      const height = Math.ceil(
+        Math.max(
+          measureTarget.scrollHeight,
+          measureTarget.getBoundingClientRect().height,
+          measureTarget.offsetHeight
+        )
+      );
+      if (width <= 0 && height <= 0) {
+        return;
+      }
+      if (resizeFrame != null) {
+        cancelAnimationFrame(resizeFrame);
+      }
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = requestAnimationFrame(() => {
+          resizeFrame = null;
+          void bridgeInvoke('view.reportSize', {
+            ...(width > 0 ? { width } : {}),
+            ...(height > 0 ? { height } : {}),
+            slot: 'headerActions'
+          });
+        });
+      });
+    };
+
+    resizeObserver = new ResizeObserver(() => {
+      reportHeaderActionsSize();
+    });
+    resizeObserver.observe(root);
+
+    render();
+    reportHeaderActionsSize();
+
+    return () => {
+      resizeObserver?.disconnect();
+      if (resizeFrame != null) {
+        cancelAnimationFrame(resizeFrame);
+      }
+    };
+  }
 
   const unsubscribe = bridgeOn('view.context', (payload) => {
     currentContext = payload;

@@ -3,6 +3,54 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent
 
 type Axis = 'x' | 'y';
 
+/** Id of the shared stylesheet injected during resize drags. */
+const RESIZING_STYLE_ID = 'hc-resizable-drag-styles';
+
+/**
+ * Injects shared CSS that neutralizes webviews/iframes and shows the resize cursor during drags.
+ * Electron webviews paint above normal DOM, so pointer-events must be disabled on the webview itself.
+ */
+function ensureResizingStylesheet(): void {
+  if (document.getElementById(RESIZING_STYLE_ID)) {
+    return;
+  }
+  const style = document.createElement('style');
+  style.id = RESIZING_STYLE_ID;
+  style.textContent = `
+    body[data-hc-resizing] webview,
+    body[data-hc-resizing] iframe {
+      pointer-events: none !important;
+    }
+    body[data-hc-resizing="y"] * {
+      cursor: row-resize !important;
+    }
+    body[data-hc-resizing="x"] * {
+      cursor: col-resize !important;
+    }
+    body[data-hc-resizing] {
+      user-select: none !important;
+    }
+  `.trim();
+  document.head.appendChild(style);
+}
+
+/**
+ * Marks the document as in an active resize drag so embedded webviews pass pointer events through.
+ *
+ * @param axis - Resize axis used for cursor styling.
+ */
+function setResizingState(axis: Axis): void {
+  ensureResizingStylesheet();
+  document.body.dataset.hcResizing = axis;
+}
+
+/**
+ * Clears the active resize drag marker from the document body.
+ */
+function clearResizingState(): void {
+  delete document.body.dataset.hcResizing;
+}
+
 export interface UseResizableOptions {
   /**
    * Pointer axis used to compute drag delta.
@@ -141,6 +189,7 @@ export function useResizable({
       resizingRef.current = true;
       startPosRef.current = axis === 'x' ? event.clientX : event.clientY;
       startSizeRef.current = sizeRef.current;
+      setResizingState(axis);
     },
     [axis]
   );
@@ -202,6 +251,7 @@ export function useResizable({
     const handleMouseUp = (): void => {
       if (!resizingRef.current) return;
       resizingRef.current = false;
+      clearResizingState();
       if (storageKey) {
         persistSize(storageKey, sizeRef.current);
       }
@@ -210,10 +260,28 @@ export function useResizable({
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
     return () => {
+      // Only detach listeners here. This effect re-runs whenever a dependency
+      // such as `getMaxSize` changes identity (callers often pass an inline
+      // function), which happens on every render the drag itself triggers via
+      // setSizeState. Resetting `resizingRef`/clearing state here would abort
+      // the drag after the first pointer move. Mid-drag teardown on real
+      // unmount is handled by the dedicated unmount effect below.
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [axis, direction, getMaxSize, minSize, storageKey]);
+
+  /**
+   * Clears the document resize marker when the hook unmounts mid-drag.
+   */
+  useEffect(() => {
+    return () => {
+      if (resizingRef.current) {
+        resizingRef.current = false;
+        clearResizingState();
+      }
+    };
+  }, []);
 
   return { size, minSize, maxSize, setSize, onResizeStart, onKeyboardResize };
 }

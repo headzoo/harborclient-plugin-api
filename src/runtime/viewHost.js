@@ -7,6 +7,7 @@ import {
   parseViewHostRole,
   resolveContributionKindFromUrl
 } from './createBridgedPluginContext.js';
+import { setHostReact } from './reactHost.js';
 
 /**
  * Bootstraps an isolated plugin webview shell.
@@ -44,6 +45,8 @@ export async function bootstrapViewHost(options = {}) {
       import('harbor-plugin://host/react-dom.js'),
       import('harbor-plugin://host/react-dom-client.js')
     ]);
+
+  setHostReact(React);
 
   const manifest = await fetch(`harbor-plugin://${pluginId}/manifest.json`).then((response) =>
     response.json()

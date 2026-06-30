@@ -112,6 +112,46 @@ hc.subscriptions.push(
 );
 ```
 
+## hc.ui.registerModal(modal)
+
+**Signature:** `(modal: ModalContribution) => Disposable`
+
+**Manifest:** `contributes.modals`
+
+| Parameter   | Type                                         | Description                                     |
+| ----------- | -------------------------------------------- | ----------------------------------------------- |
+| `id`        | `string`                                     | Modal id                                        |
+| `title`     | `string`                                     | Accessible title for the modal surface          |
+| `Component` | `React.ComponentType<{ context?: unknown }>` | Modal body; receives `context` from `openModal` |
+
+Registers a modal rendered in a full-window overlay at the application root. Open it with `hc.ui.openModal(modalId, context?)` and close it with `hc.ui.closeModal(modalId?)`. Requires the `ui` permission.
+
+```typescript
+hc.subscriptions.push(
+  hc.ui.registerModal({
+    id: 'myPlugin.editor',
+    title: 'Edit item',
+    Component: ({ context }) => <EditorModal context={context} />
+  })
+);
+
+hc.ui.openModal('myPlugin.editor', { itemId: 'abc' });
+```
+
+## hc.ui.openModal(modalId, context?)
+
+**Signature:** `(modalId: string, context?: unknown) => void`
+
+**Manifest:** `contributes.modals` — `modalId` must match a registered modal contribution.
+
+Opens the registered modal overlay in the host application window. Optional `context` is passed to the modal component as a `context` prop.
+
+## hc.ui.closeModal(modalId?)
+
+**Signature:** `(modalId?: string) => void`
+
+Closes the open plugin modal overlay. When `modalId` is provided, the overlay closes only if that modal is currently open.
+
 ## hc.ui.registerRequestTab(tab)
 
 **Signature:** `(tab: RequestTabContribution) => Disposable`

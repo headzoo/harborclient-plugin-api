@@ -247,6 +247,18 @@ export interface MainViewContribution extends UiContributionBase {
   Component: React.ComponentType;
 }
 
+/**
+ * Registers modal content rendered in a host overlay webview above the application.
+ *
+ * Manifest: `contributes.modals`. Requires the `ui` permission.
+ */
+export interface ModalContribution extends UiContributionBase {
+  /**
+   * Modal body. Receives a `context` prop from {@link PluginUi.openModal}.
+   */
+  Component: React.ComponentType<{ context: unknown }>;
+}
+
 // ---------------------------------------------------------------------------
 // Request / response data
 // ---------------------------------------------------------------------------
@@ -1106,6 +1118,31 @@ export interface PluginUi {
    * @returns A {@link Disposable} that unregisters the view when disposed.
    */
   registerMainView(view: MainViewContribution): Disposable;
+
+  /**
+   * Registers modal content shown in a host overlay webview above the application.
+   *
+   * Manifest: `contributes.modals` — `modal.id` must match an entry there.
+   *
+   * @param modal - Modal contribution.
+   * @returns A {@link Disposable} that unregisters the modal when disposed.
+   */
+  registerModal(modal: ModalContribution): Disposable;
+
+  /**
+   * Opens a registered modal in the host overlay webview.
+   *
+   * @param modalId - Manifest modal contribution id.
+   * @param context - Optional serializable context passed to the modal component.
+   */
+  openModal(modalId: string, context?: unknown): void;
+
+  /**
+   * Closes an open host overlay modal.
+   *
+   * @param modalId - Manifest modal contribution id.
+   */
+  closeModal(modalId: string): void;
 
   /**
    * Adds a segmented tab to the request editor.
