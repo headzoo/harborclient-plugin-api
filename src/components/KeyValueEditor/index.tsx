@@ -1,9 +1,11 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import type { JSX } from 'react';
 import type { KeyValue, Variable } from '../../types.js';
+import { AutocompleteInput } from '../Autocomplete/index.js';
+import type { AutocompleteSource } from '../Autocomplete/types.js';
 import { Button } from '../Button/index.js';
 import { FaIcon } from '../FaIcon/index.js';
-import { Checkbox, Input, fieldFrame } from '../forms/index.js';
+import { Checkbox, fieldFrame } from '../forms/index.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader } from '../Table/index.js';
 import { VariableInput } from '../VariableInput/index.js';
 
@@ -39,6 +41,16 @@ export interface Props {
    * Opens collection settings to edit a hovered variable.
    */
   onEditVariable?: () => void;
+
+  /**
+   * Optional async source for key column autocomplete suggestions.
+   */
+  keySource?: AutocompleteSource;
+
+  /**
+   * Optional async source for value column autocomplete suggestions.
+   */
+  valueSource?: AutocompleteSource;
 }
 
 /**
@@ -50,7 +62,9 @@ export function KeyValueEditor({
   placeholderKey = 'Key',
   placeholderValue = 'Value',
   variables,
-  onEditVariable
+  onEditVariable,
+  keySource,
+  valueSource
 }: Props): JSX.Element {
   /**
    * Updates a single row by index.
@@ -105,13 +119,14 @@ export function KeyValueEditor({
               />
             </TableCell>
             <TableCell>
-              <Input
+              <AutocompleteInput
                 type="text"
                 className="w-full"
                 value={row.key}
+                source={keySource}
                 placeholder={placeholderKey}
                 aria-label={`Key, row ${index + 1}`}
-                onChange={(e) => updateRow(index, { key: e.target.value })}
+                onChange={(key) => updateRow(index, { key })}
               />
             </TableCell>
             <TableCell>
@@ -121,6 +136,7 @@ export function KeyValueEditor({
                 value={row.value}
                 onChange={(value) => updateRow(index, { value })}
                 variables={variables}
+                source={valueSource}
                 placeholder={placeholderValue}
                 aria-label={`Value, row ${index + 1}`}
                 onEditVariable={onEditVariable}

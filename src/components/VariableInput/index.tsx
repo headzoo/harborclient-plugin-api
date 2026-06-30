@@ -8,6 +8,9 @@ import {
   resolveVariable,
   tokenizeVariables
 } from '../../variables/index.js';
+import { SuggestionList } from '../Autocomplete/SuggestionList.js';
+import type { AutocompleteSource } from '../Autocomplete/types.js';
+import { useAutocomplete } from '../Autocomplete/useAutocomplete.js';
 import { Input } from '../forms/index.js';
 
 interface TooltipState {
@@ -75,6 +78,11 @@ export interface Props {
    * Id of the element that labels this input when using `aria-labelledby`.
    */
   'aria-labelledby'?: string;
+
+  /**
+   * Optional async source for value autocomplete suggestions.
+   */
+  source?: AutocompleteSource;
 }
 
 /**
@@ -94,7 +102,8 @@ export function VariableInput({
   onEditVariable,
   id,
   'aria-label': ariaLabel,
-  'aria-labelledby': ariaLabelledBy
+  'aria-labelledby': ariaLabelledBy,
+  source
 }: Props): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -102,6 +111,24 @@ export function VariableInput({
   const hideTimer = useRef<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const tooltipId = useId();
+
+  const {
+    open: autocompleteOpen,
+    items: autocompleteItems,
+    activeIndex: autocompleteActiveIndex,
+    listboxId,
+    onFocus: openAutocomplete,
+    onBlur: closeAutocomplete,
+    onInputKeyDown,
+    selectItem,
+    setActiveIndex,
+    closeSuggestions
+  } = useAutocomplete({
+    source,
+    value,
+    onSelect: onChange,
+    anchorRef: inputRef
+  });
 
   /**
    * Splits the input value into plain text and {{variable}} token spans for highlighting.
@@ -229,6 +256,10 @@ export function VariableInput({
    * @param event - Keyboard event from the input.
    */
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (onInputKeyDown(event)) {
+      return;
+    }
+
     if (event.key === 'Escape' && tooltip) {
       event.preventDefault();
       setTooltip(null);
@@ -295,6 +326,15 @@ export function VariableInput({
         ref={inputRef}
         id={id}
         variant="plain"
+        role={source ? 'combobox' : undefined}
+        aria-autocomplete={source ? 'list' : undefined}
+        aria-expanded={source ? autocompleteOpen : undefined}
+        aria-controls={source && autocompleteOpen ? listboxId : undefined}
+        aria-activedescendant={
+          source && autocompleteOpen && autocompleteActiveIndex >= 0
+            ? `${listboxId}-option-${autocompleteActiveIndex}`
+            : undefined
+        }
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={tooltip ? tooltipId : undefined}
@@ -306,7 +346,11 @@ export function VariableInput({
           onChange(e.target.value);
           queueMicrotask(updateTooltipFromCaret);
         }}
-        onFocus={updateTooltipFromCaret}
+        onFocus={() => {
+          openAutocomplete();
+          updateTooltipFromCaret();
+        }}
+        onBlur={closeAutocomplete}
         onKeyDown={handleKeyDown}
         onKeyUp={handleKeyUp}
         onSelect={updateTooltipFromCaret}
@@ -315,6 +359,19 @@ export function VariableInput({
         onMouseMove={handleMouseMove}
         onMouseLeave={scheduleHide}
       />
+
+      {source && (
+        <SuggestionList
+          open={autocompleteOpen}
+          items={autocompleteItems}
+          activeIndex={autocompleteActiveIndex}
+          anchorRef={inputRef}
+          listboxId={listboxId}
+          onSelect={selectItem}
+          onActiveIndexChange={setActiveIndex}
+          onClose={closeSuggestions}
+        />
+      )}
 
       {tooltip && tooltipContent && (
         <div

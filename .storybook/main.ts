@@ -43,6 +43,7 @@ const config: StorybookConfig = {
       resolve: {
         alias: {
           '@harborclient/sdk/react': join(srcDir, 'runtime/react.js'),
+          '@harborclient/sdk/react-dom': join(srcDir, 'runtime/react-dom.js'),
           '@harborclient/sdk/jsx-runtime': join(srcDir, 'runtime/jsx-runtime.js'),
           '@harborclient/sdk/jsx-dev-runtime': join(srcDir, 'runtime/jsx-dev-runtime.js'),
           '@harborclient/sdk': join(srcDir, 'runtime/index.js')

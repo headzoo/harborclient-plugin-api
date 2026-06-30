@@ -1,9 +1,12 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { installReact } from '@harborclient/sdk';
 import type { Preview } from '@storybook/react-vite';
+import { setHostReactDom } from '../src/runtime/reactHost.js';
 import './tailwind.css';
 
 installReact(React);
+setHostReactDom(ReactDOM);
 
 const preview: Preview = {
   parameters: {

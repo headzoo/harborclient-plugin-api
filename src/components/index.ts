@@ -1,4 +1,11 @@
 export { AsyncListState, ErrorRetry, LoadingMessage } from './AsyncListState/index.js';
+export {
+  AutocompleteInput,
+  SuggestionList,
+  useAutocomplete,
+  type AutocompleteInputProps,
+  type AutocompleteSource
+} from './Autocomplete/index.js';
 export { BusyIndicator } from './BusyIndicator/index.js';
 export type { Props as BusyIndicatorProps } from './BusyIndicator/index.js';
 export { BackButton } from './BackButton/index.js';
