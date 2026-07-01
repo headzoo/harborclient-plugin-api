@@ -9,6 +9,7 @@ Every plugin requires a manifest at the root of the `.hcp` archive. The example 
   "version": "1.0.0",
 
   "author": "Example Inc.",
+  "summary": "Adds a sidebar panel for API audit checks.",
   "description": "README.md",
   "icon": "assets/icon.png",
   "screenshots": [
@@ -64,6 +65,7 @@ Every plugin requires a manifest at the root of the `.hcp` archive. The example 
 | `name`                 | Yes      | Display name shown in Settings and install dialogs.                                                                                 |
 | `version`              | Yes      | Semver version string.                                                                                                              |
 | `author`               | No       | Publisher or author name shown on the plugin detail page.                                                                           |
+| `summary`              | No       | Short one-line description shown in marketplace lists and the plugin detail view.                                                   |
 | `description`          | No       | Path to a Markdown file (for example `README.md`) with the full plugin description. Rendered in **Settings → Plugins** detail view. |
 | `icon`                 | No       | Path to a square PNG or SVG icon (recommended 128×128 px or larger). Shown in the plugin list and install dialog.                   |
 | `screenshots`          | No       | Gallery images for the plugin detail page. See [Screenshots](#screenshots) below.                                                   |
@@ -78,6 +80,14 @@ Every plugin requires a manifest at the root of the `.hcp` archive. The example 
 ## Plugin metadata
 
 Listing metadata is separate from `contributes` — it describes the package for users browsing **Settings → Plugins**, not UI slots inside the app.
+
+### summary
+
+A plain one-line tagline for marketplace cards and the plugin detail header. Keep it under roughly one sentence — for example, what the plugin does at a glance. This is separate from `description`, which points to a Markdown file with full install-time documentation.
+
+```json
+"summary": "Adds a sidebar panel for API audit checks."
+```
 
 ### description
 

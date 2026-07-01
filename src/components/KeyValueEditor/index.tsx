@@ -94,6 +94,17 @@ export function KeyValueEditor({
     onChange(rows.filter((_, i) => i !== index));
   };
 
+  /**
+   * Normalizes a key-value row so editors never receive undefined fields.
+   *
+   * @param row - Raw row from host state or imports.
+   */
+  const normalizeRow = (row: KeyValue): KeyValue => ({
+    key: row.key ?? '',
+    value: row.value ?? '',
+    enabled: row.enabled ?? true
+  });
+
   return (
     <Table>
       <TableHeader>
@@ -107,54 +118,57 @@ export function KeyValueEditor({
         </tr>
       </TableHeader>
       <TableBody>
-        {rows.map((row, index) => (
-          <tr key={index}>
-            <TableCell className="w-6 p-1 text-center">
-              <Checkbox
-                className="app-no-drag"
-                checked={row.enabled}
-                onChange={(e) => updateRow(index, { enabled: e.target.checked })}
-                aria-label={`Enable row ${index + 1}`}
-                title="Enable"
-              />
-            </TableCell>
-            <TableCell>
-              <AutocompleteInput
-                type="text"
-                className="w-full"
-                value={row.key}
-                source={keySource}
-                placeholder={placeholderKey}
-                aria-label={`Key, row ${index + 1}`}
-                onChange={(key) => updateRow(index, { key })}
-              />
-            </TableCell>
-            <TableCell>
-              <VariableInput
-                wrapperClassName={`${fieldFrame} w-full`}
-                className="app-no-drag"
-                value={row.value}
-                onChange={(value) => updateRow(index, { value })}
-                variables={variables}
-                source={valueSource}
-                placeholder={placeholderValue}
-                aria-label={`Value, row ${index + 1}`}
-                onEditVariable={onEditVariable}
-              />
-            </TableCell>
-            <TableCell className="w-7 p-1 text-center">
-              <Button
-                type="button"
-                variant="iconDanger"
-                onClick={() => removeRow(index)}
-                title="Remove"
-                aria-label={`Remove row ${index + 1}`}
-              >
-                <FaIcon icon={faXmark} className="h-3.5 w-3.5" />
-              </Button>
-            </TableCell>
-          </tr>
-        ))}
+        {rows.map((row, index) => {
+          const normalizedRow = normalizeRow(row);
+          return (
+            <tr key={index}>
+              <TableCell className="w-6 p-1 text-center">
+                <Checkbox
+                  className="app-no-drag"
+                  checked={normalizedRow.enabled}
+                  onChange={(e) => updateRow(index, { enabled: e.target.checked })}
+                  aria-label={`Enable row ${index + 1}`}
+                  title="Enable"
+                />
+              </TableCell>
+              <TableCell>
+                <AutocompleteInput
+                  type="text"
+                  className="w-full"
+                  value={normalizedRow.key}
+                  source={keySource}
+                  placeholder={placeholderKey}
+                  aria-label={`Key, row ${index + 1}`}
+                  onChange={(key) => updateRow(index, { key })}
+                />
+              </TableCell>
+              <TableCell>
+                <VariableInput
+                  wrapperClassName={`${fieldFrame} w-full`}
+                  className="app-no-drag"
+                  value={normalizedRow.value}
+                  onChange={(value) => updateRow(index, { value })}
+                  variables={variables}
+                  source={valueSource}
+                  placeholder={placeholderValue}
+                  aria-label={`Value, row ${index + 1}`}
+                  onEditVariable={onEditVariable}
+                />
+              </TableCell>
+              <TableCell className="w-7 p-1 text-center">
+                <Button
+                  type="button"
+                  variant="iconDanger"
+                  onClick={() => removeRow(index)}
+                  title="Remove"
+                  aria-label={`Remove row ${index + 1}`}
+                >
+                  <FaIcon icon={faXmark} className="h-3.5 w-3.5" />
+                </Button>
+              </TableCell>
+            </tr>
+          );
+        })}
       </TableBody>
     </Table>
   );

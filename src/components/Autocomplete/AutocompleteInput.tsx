@@ -36,6 +36,8 @@ export function AutocompleteInput({
   onKeyDown,
   ...props
 }: Props): JSX.Element {
+  const safeValue = value ?? '';
+
   const {
     open,
     items,
@@ -50,7 +52,7 @@ export function AutocompleteInput({
     closeSuggestions
   } = useAutocomplete({
     source,
-    value,
+    value: safeValue,
     onSelect: onChange
   });
 
@@ -67,7 +69,7 @@ export function AutocompleteInput({
           source && open && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
         }
         className={className}
-        value={value}
+        value={safeValue}
         onChange={(event) => onChange(event.target.value)}
         onFocus={(event) => {
           openAutocomplete();

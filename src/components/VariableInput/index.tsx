@@ -105,6 +105,7 @@ export function VariableInput({
   'aria-labelledby': ariaLabelledBy,
   source
 }: Props): JSX.Element {
+  const safeValue = value ?? '';
   const inputRef = useRef<HTMLInputElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const spanRefs = useRef<Map<number, HTMLSpanElement>>(new Map());
@@ -125,7 +126,7 @@ export function VariableInput({
     closeSuggestions
   } = useAutocomplete({
     source,
-    value,
+    value: safeValue,
     onSelect: onChange,
     anchorRef: inputRef
   });
@@ -133,7 +134,7 @@ export function VariableInput({
   /**
    * Splits the input value into plain text and {{variable}} token spans for highlighting.
    */
-  const tokens = useMemo(() => tokenizeVariables(value), [value]);
+  const tokens = useMemo(() => tokenizeVariables(safeValue), [safeValue]);
 
   /**
    * Clears any pending tooltip hide timer.
@@ -194,7 +195,7 @@ export function VariableInput({
     if (!input) return;
 
     const offset = input.selectionStart ?? 0;
-    const match = getVariableTokenAtOffset(value, offset);
+    const match = getVariableTokenAtOffset(safeValue, offset);
     if (!match) {
       setTooltip(null);
       return;
@@ -300,7 +301,7 @@ export function VariableInput({
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden whitespace-nowrap px-2 py-1.5 text-[14px] text-inherit"
       >
-        {value ? (
+        {safeValue ? (
           tokens.map((token, index) =>
             token.key ? (
               <span
@@ -341,7 +342,7 @@ export function VariableInput({
         className={`relative w-full min-w-0 border-none bg-transparent px-2 py-1.5 text-[14px] text-transparent caret-text focus-visible:shadow-none ${className}`}
         type="text"
         placeholder={placeholder}
-        value={value}
+        value={safeValue}
         onChange={(e) => {
           onChange(e.target.value);
           queueMicrotask(updateTooltipFromCaret);

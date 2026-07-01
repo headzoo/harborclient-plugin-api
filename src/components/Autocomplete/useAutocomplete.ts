@@ -98,8 +98,11 @@ interface UseAutocompleteResult {
  * @param items - Full suggestion list.
  * @param value - Current input value.
  */
-function filterItems(items: string[], value: string): string[] {
-  const trimmed = value.trim();
+export function filterAutocompleteItems(
+  items: string[],
+  value: string | null | undefined
+): string[] {
+  const trimmed = (value ?? '').trim();
   const lower = trimmed.toLowerCase();
 
   return items.filter((item) => {
@@ -111,6 +114,18 @@ function filterItems(items: string[], value: string): string[] {
     }
     return item.toLowerCase().includes(lower);
   });
+}
+
+/**
+ * Normalizes a source list response to a string array.
+ *
+ * @param list - Raw value returned from {@link AutocompleteSource.list}.
+ */
+function normalizeSourceList(list: unknown): string[] {
+  if (!Array.isArray(list)) {
+    return [];
+  }
+  return list.filter((item): item is string => typeof item === 'string');
 }
 
 /**
@@ -129,10 +144,23 @@ export function useAutocomplete({
   const cacheRef = useRef<string[]>([]);
   const loadedRef = useRef(false);
   const loadPromiseRef = useRef<Promise<string[]> | null>(null);
+  const mountedRef = useRef(true);
   const listboxId = useId();
+  const safeValue = value ?? '';
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
+
+  /**
+   * Clears the mounted flag when the hook unmounts so async work cannot set state.
+   */
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      loadPromiseRef.current = null;
+    };
+  }, []);
 
   /**
    * Loads suggestions from the source when not already cached.
@@ -148,12 +176,21 @@ export function useAutocomplete({
       return loadPromiseRef.current;
     }
 
-    loadPromiseRef.current = source.list().then((list) => {
-      cacheRef.current = list;
-      loadedRef.current = true;
-      loadPromiseRef.current = null;
-      return list;
-    });
+    loadPromiseRef.current = source
+      .list()
+      .then((list) => {
+        const normalized = normalizeSourceList(list);
+        cacheRef.current = normalized;
+        loadedRef.current = true;
+        loadPromiseRef.current = null;
+        return normalized;
+      })
+      .catch(() => {
+        cacheRef.current = [];
+        loadedRef.current = true;
+        loadPromiseRef.current = null;
+        return [];
+      });
 
     return loadPromiseRef.current;
   }, [source]);
@@ -163,11 +200,16 @@ export function useAutocomplete({
    */
   const refreshItems = useCallback((): void => {
     if (!source) {
-      setItems([]);
+      if (mountedRef.current) {
+        setItems([]);
+      }
       return;
     }
-    setItems(filterItems(cacheRef.current, value));
-  }, [source, value]);
+    if (!mountedRef.current) {
+      return;
+    }
+    setItems(filterAutocompleteItems(cacheRef.current, safeValue));
+  }, [source, safeValue]);
 
   /**
    * Persists a new value when it is not already known.
@@ -177,7 +219,7 @@ export function useAutocomplete({
       return;
     }
 
-    const trimmed = value.trim();
+    const trimmed = safeValue.trim();
     if (!trimmed) {
       return;
     }
@@ -193,7 +235,7 @@ export function useAutocomplete({
     } catch {
       cacheRef.current = cacheRef.current.filter((item) => item !== trimmed);
     }
-  }, [source, value]);
+  }, [source, safeValue]);
 
   /**
    * Opens the suggestion list and loads items when a source is configured.
@@ -204,16 +246,23 @@ export function useAutocomplete({
     }
 
     await ensureLoaded();
-    const filtered = filterItems(cacheRef.current, value);
+    if (!mountedRef.current) {
+      return;
+    }
+
+    const filtered = filterAutocompleteItems(cacheRef.current, safeValue);
     setItems(filtered);
     setActiveIndex(filtered.length > 0 ? 0 : -1);
     setOpen(true);
-  }, [ensureLoaded, source, value]);
+  }, [ensureLoaded, source, safeValue]);
 
   /**
    * Closes the suggestion list and resets highlight state.
    */
   const closeSuggestions = useCallback((): void => {
+    if (!mountedRef.current) {
+      return;
+    }
     setOpen(false);
     setActiveIndex(-1);
   }, []);
@@ -295,11 +344,14 @@ export function useAutocomplete({
     [activeIndex, closeSuggestions, commit, items, open, selectItem, source]
   );
 
+  /**
+   * Re-filters suggestions when the input value changes while the list is open.
+   */
   useEffect(() => {
     if (open) {
       refreshItems();
     }
-  }, [open, refreshItems, value]);
+  }, [open, refreshItems, safeValue]);
 
   return {
     open,
