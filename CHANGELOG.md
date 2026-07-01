@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 1.0.12 - 2026-07-01
+
 - Enhance PageHeader component styling for improved visual hierarchy. (`d6dbfe6`)
 
 ## 1.0.11 - 2026-07-01
