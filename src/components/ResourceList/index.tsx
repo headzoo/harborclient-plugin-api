@@ -36,7 +36,7 @@ export function ResourceList({
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy
 }: ResourceListProps): JSX.Element {
-  const base = 'm-0 flex list-none flex-col gap-2 p-0';
+  const base = 'hc-resource-list m-0 flex list-none flex-col gap-2 p-0';
   const classes = className ? `${base} ${className}` : base;
 
   return (

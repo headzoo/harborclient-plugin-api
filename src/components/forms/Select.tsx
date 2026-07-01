@@ -31,7 +31,7 @@ export function Select({
   ...props
 }: Props): JSX.Element {
   return (
-    <select ref={ref} className={mergeFieldClasses(variant, className)} {...props}>
+    <select ref={ref} className={mergeFieldClasses(variant, className, 'hc-select')} {...props}>
       {children}
     </select>
   );

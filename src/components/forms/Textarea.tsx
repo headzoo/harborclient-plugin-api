@@ -22,5 +22,11 @@ interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
  * macOS-style multiline input with shared field styling presets.
  */
 export function Textarea({ ref, variant = 'control', className, ...props }: Props): JSX.Element {
-  return <textarea ref={ref} className={mergeFieldClasses(variant, className)} {...props} />;
+  return (
+    <textarea
+      ref={ref}
+      className={mergeFieldClasses(variant, className, 'hc-textarea')}
+      {...props}
+    />
+  );
 }

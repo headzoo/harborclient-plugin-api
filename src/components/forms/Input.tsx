@@ -28,7 +28,7 @@ export function Input({ ref, variant = 'control', type, className, ...props }: P
     <input
       ref={ref}
       type={type}
-      className={mergeFieldClasses(resolvedVariant, className)}
+      className={mergeFieldClasses(resolvedVariant, className, 'hc-input')}
       {...props}
     />
   );

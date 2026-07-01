@@ -106,7 +106,7 @@ export function KeyValueEditor({
   });
 
   return (
-    <Table>
+    <Table className="hc-key-value-editor">
       <TableHeader>
         <tr>
           <TableHead className="w-6 p-0">

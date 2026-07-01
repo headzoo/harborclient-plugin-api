@@ -56,19 +56,19 @@ interface BaseProps {
 type Props = BaseProps &
   (
     | {
-        /**
-         * Id of the element that labels the dialog (typically the heading).
-         */
-        labelledBy: string;
-        label?: never;
-      }
+      /**
+       * Id of the element that labels the dialog (typically the heading).
+       */
+      labelledBy: string;
+      label?: never;
+    }
     | {
-        labelledBy?: never;
-        /**
-         * Accessible name when no visible heading is linked via `labelledBy`.
-         */
-        label: string;
-      }
+      labelledBy?: never;
+      /**
+       * Accessible name when no visible heading is linked via `labelledBy`.
+       */
+      label: string;
+    }
   );
 
 /**
@@ -113,7 +113,7 @@ export function Modal({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [disableEscape, onClose]);
 
-  const overlayClass = `fixed inset-0 flex items-center justify-center bg-black/40 ${overlayClassName ?? 'z-50'}`;
+  const overlayClass = `hc-modal fixed inset-0 flex items-center justify-center bg-black/40 ${overlayClassName ?? 'z-50'}`;
 
   const panelClass = title
     ? `${className} flex max-h-[85vh] flex-col overflow-hidden rounded-lg border border-separator bg-surface shadow-xl`

@@ -47,7 +47,9 @@ function footerIconButton(active: boolean): string {
  */
 export function FooterIcon({ icon, active, onClick, label, className }: Props): JSX.Element {
   const accessibleLabel = active ? `Hide ${label}` : `Show ${label}`;
-  const classes = className ? `${footerIconButton(active)} ${className}` : footerIconButton(active);
+  const classes = className
+    ? `hc-footer-icon ${footerIconButton(active)} ${className}`
+    : `hc-footer-icon ${footerIconButton(active)}`;
 
   return (
     <button

@@ -63,7 +63,7 @@ export function VariableTable({ variables, onChange, description }: Props): JSX.
   };
 
   return (
-    <div>
+    <div className="hc-variable-table">
       {description && <p className="mb-3 text-[14px] text-muted">{description}</p>}
 
       <div className="flex flex-col gap-1.5">

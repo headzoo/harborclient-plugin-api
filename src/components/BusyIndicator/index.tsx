@@ -103,7 +103,7 @@ export function BusyIndicator({ isBusy }: Props): JSX.Element | null {
   return (
     <>
       <div
-        className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-0.5 overflow-hidden bg-separator"
+        className="hc-busy-indicator pointer-events-none fixed inset-x-0 top-0 z-[100] h-0.5 overflow-hidden bg-separator"
         aria-hidden="true"
       >
         <div className="busy-progress-bar h-full w-1/3 bg-accent" />

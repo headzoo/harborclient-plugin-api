@@ -30,7 +30,7 @@ interface Props {
  * @param className - Extra classes appended after the preset.
  */
 export function StatusMessage({ children, live = true, id, className }: Props): JSX.Element {
-  const base = 'text-[14px] text-muted';
+  const base = 'hc-status-message text-[14px] text-muted';
   const classes = className ? `${base} ${className}` : base;
 
   return (

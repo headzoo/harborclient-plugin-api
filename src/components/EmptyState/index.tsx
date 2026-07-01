@@ -40,7 +40,7 @@ function variantClasses(variant: EmptyStateVariant): string {
  * @param className - Extra classes appended after the preset.
  */
 export function EmptyState({ children, variant = 'inline', className }: Props): JSX.Element {
-  const base = variantClasses(variant);
+  const base = `hc-empty-state ${variantClasses(variant)}`;
   const classes = className ? `${base} ${className}` : base;
 
   return <div className={classes}>{children}</div>;

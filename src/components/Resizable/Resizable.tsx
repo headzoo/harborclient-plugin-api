@@ -116,7 +116,7 @@ export function Resizable({
     <div
       ref={containerRef}
       id={id}
-      className={footerPanelClassName(open)}
+      className={`hc-resizable ${footerPanelClassName(open)}`}
       style={{ height }}
       role="region"
       aria-label={`${closeLabel} panel`}

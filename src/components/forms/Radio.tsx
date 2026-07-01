@@ -18,8 +18,8 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
  */
 export function Radio({ ref, className, ...props }: Props): JSX.Element {
   const wrapperClasses = className
-    ? `relative inline-flex h-[18px] w-[18px] shrink-0 leading-none ${className}`
-    : 'relative inline-flex h-[18px] w-[18px] shrink-0 leading-none';
+    ? `hc-radio relative inline-flex h-[18px] w-[18px] shrink-0 leading-none ${className}`
+    : 'hc-radio relative inline-flex h-[18px] w-[18px] shrink-0 leading-none';
 
   return (
     <span className={wrapperClasses}>

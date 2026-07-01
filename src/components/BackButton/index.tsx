@@ -37,7 +37,7 @@ interface Props {
  */
 export function BackButton({ onClick, label = 'Back', ariaLabel, className }: Props): JSX.Element {
   const base = 'inline-flex shrink-0 items-center justify-center py-2';
-  const classes = className ? `${base} ${className}` : base;
+  const classes = className ? `hc-back-button ${base} ${className}` : `hc-back-button ${base}`;
 
   return (
     <Button

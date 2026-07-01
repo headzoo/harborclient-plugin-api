@@ -23,8 +23,8 @@ interface Props {
  */
 export function SidebarLayout({ sidebar, children, className }: Props): JSX.Element {
   const outer = className
-    ? `flex min-h-0 flex-1 flex-col ${className}`
-    : 'flex min-h-0 flex-1 flex-col';
+    ? `hc-sidebar-layout flex min-h-0 flex-1 flex-col ${className}`
+    : 'hc-sidebar-layout flex min-h-0 flex-1 flex-col';
 
   return (
     <div className={outer}>

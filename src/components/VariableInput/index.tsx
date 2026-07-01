@@ -293,7 +293,9 @@ export function VariableInput({
   return (
     <div
       className={
-        wrapperClassName ? `relative min-w-0 ${wrapperClassName}` : 'relative min-w-0 flex-1'
+        wrapperClassName
+          ? `hc-variable-input relative min-w-0 ${wrapperClassName}`
+          : 'hc-variable-input relative min-w-0 flex-1'
       }
     >
       <div

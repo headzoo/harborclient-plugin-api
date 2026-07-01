@@ -66,6 +66,8 @@ export function Button({
   innerRef,
   ...props
 }: ButtonProps): JSX.Element {
-  const classes = className ? `${VARIANT_CLASSES[variant]} ${className}` : VARIANT_CLASSES[variant];
+  const classes = className
+    ? `hc-button ${VARIANT_CLASSES[variant]} ${className}`
+    : `hc-button ${VARIANT_CLASSES[variant]}`;
   return <button ref={innerRef} type={type} className={classes} {...props} />;
 }

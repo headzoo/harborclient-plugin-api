@@ -228,7 +228,7 @@ export function RowActionsMenu({ groups, menuId, openMenuId, onOpenChange }: Pro
   };
 
   return (
-    <div ref={rootRef} className="relative shrink-0">
+    <div ref={rootRef} className="hc-row-actions-menu relative shrink-0">
       <Button
         innerRef={triggerRef}
         type="button"

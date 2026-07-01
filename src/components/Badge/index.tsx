@@ -50,7 +50,7 @@ function variantClasses(variant: BadgeVariant): string {
  * @param className - Extra classes appended after the variant preset.
  */
 export function Badge({ children, variant = 'muted', className }: Props): JSX.Element {
-  const base = `inline-flex shrink-0 items-center rounded px-1.5 py-0.5 text-[14px] ${variantClasses(variant)}`;
+  const base = `hc-badge inline-flex shrink-0 items-center rounded px-1.5 py-0.5 text-[14px] ${variantClasses(variant)}`;
   const classes = className ? `${base} ${className}` : base;
 
   return <span className={classes}>{children}</span>;

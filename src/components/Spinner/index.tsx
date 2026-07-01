@@ -37,7 +37,7 @@ function sizeClasses(size: SpinnerSize): string {
  * @param className - Extra classes on the wrapper span.
  */
 export function Spinner({ size = 'md', label, className }: Props): JSX.Element {
-  const wrapperBase = 'inline-flex items-center justify-center';
+  const wrapperBase = 'hc-spinner inline-flex items-center justify-center';
   const wrapperClasses = className ? `${wrapperBase} ${className}` : wrapperBase;
 
   return (

@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Enhance component styling with consistent class prefixes. (`d86919a`)
+
 ## 1.0.6 - 2026-07-01
 
 - Refactor PageHeader and SidebarLayout components for improved styling. (`49caa57`)

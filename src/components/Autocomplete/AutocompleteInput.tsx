@@ -68,7 +68,7 @@ export function AutocompleteInput({
         aria-activedescendant={
           source && open && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
         }
-        className={className}
+        className={className ? `hc-autocomplete-input ${className}` : 'hc-autocomplete-input'}
         value={safeValue}
         onChange={(event) => onChange(event.target.value)}
         onFocus={(event) => {

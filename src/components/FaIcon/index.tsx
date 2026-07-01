@@ -24,9 +24,10 @@ interface Props {
  * Renders a Font Awesome SVG icon with consistent default sizing.
  */
 export function FaIcon({ icon, className = 'h-3.5 w-3.5', title }: Props): JSX.Element {
+  const classes = className ? `hc-fa-icon ${className}` : 'hc-fa-icon';
   return createElement(FontAwesomeIcon, {
     icon,
-    className,
+    className: classes,
     title,
     'aria-hidden': title ? undefined : true
   });

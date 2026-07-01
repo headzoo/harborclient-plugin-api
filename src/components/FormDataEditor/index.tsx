@@ -114,7 +114,7 @@ export function FormDataEditor({
   };
 
   return (
-    <Table>
+    <Table className="hc-form-data-editor">
       <TableHeader>
         <tr>
           <TableHead className="w-6 p-0">

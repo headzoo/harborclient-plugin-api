@@ -60,7 +60,7 @@ interface ErrorRetryProps {
  */
 export function ErrorRetry({ error, onRetry, retryLabel = 'Retry' }: ErrorRetryProps): JSX.Element {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="hc-error-retry flex flex-wrap items-center gap-2">
       <FieldError spacing="field" className="mb-0 mt-0">
         {error}
       </FieldError>

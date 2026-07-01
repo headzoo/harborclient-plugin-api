@@ -68,7 +68,7 @@ export function Page({
   );
 
   if (embedded) {
-    const outer = className ?? undefined;
+    const outer = className ? `hc-page ${className}` : 'hc-page';
     return (
       <div className={outer}>
         {header}
@@ -79,8 +79,8 @@ export function Page({
   }
 
   const outer = className
-    ? `flex min-h-0 flex-1 flex-col overflow-y-auto p-6 ${className}`
-    : 'flex min-h-0 flex-1 flex-col overflow-y-auto p-6';
+    ? `hc-page flex min-h-0 flex-1 flex-col overflow-y-auto p-6 ${className}`
+    : 'hc-page flex min-h-0 flex-1 flex-col overflow-y-auto p-6';
 
   return (
     <div className={outer}>

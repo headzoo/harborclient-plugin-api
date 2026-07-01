@@ -40,7 +40,9 @@ export function PanelCloseButton({
   className
 }: Props): JSX.Element {
   const base = 'inline-flex shrink-0 items-center justify-center py-2';
-  const classes = className ? `${base} ${className}` : base;
+  const classes = className
+    ? `hc-panel-close-button ${base} ${className}`
+    : `hc-panel-close-button ${base}`;
 
   return (
     <Button

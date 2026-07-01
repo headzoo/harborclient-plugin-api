@@ -68,7 +68,7 @@ export function PageSidebar<T extends string>({
 }: Props<T>): JSX.Element {
   return (
     <nav
-      className="flex w-[180px] shrink-0 flex-col gap-0.5 border-r border-separator bg-sidebar px-2 py-3"
+      className="hc-page-sidebar flex w-[180px] shrink-0 flex-col gap-0.5 border-r border-separator bg-sidebar px-2 py-3"
       aria-label={ariaLabel}
     >
       {items.map((item) => {

@@ -68,7 +68,7 @@ export function FieldError({
 }: Props): JSX.Element | null {
   if (children == null || children === '') return null;
 
-  const base = `${spacingClasses(spacing)} text-[14px] text-danger`;
+  const base = `hc-field-error ${spacingClasses(spacing)} text-[14px] text-danger`;
   const classes = className ? `${base} ${className}` : base;
 
   return (

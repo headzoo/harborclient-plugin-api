@@ -30,7 +30,7 @@ export function TabCloseButton({ ariaLabel, onClick, title = 'Close tab' }: Prop
   return (
     <button
       type="button"
-      className="inline-flex aspect-square shrink-0 cursor-pointer items-center justify-center self-stretch rounded-md border-none bg-transparent text-[14px] text-muted hover:bg-selection hover:text-text focus-visible:bg-selection focus-visible:text-text app-no-drag"
+      className="hc-tab-close-button inline-flex aspect-square shrink-0 cursor-pointer items-center justify-center self-stretch rounded-md border-none bg-transparent text-[14px] text-muted hover:bg-selection hover:text-text focus-visible:bg-selection focus-visible:text-text app-no-drag"
       title={title}
       aria-label={ariaLabel}
       onClick={onClick}

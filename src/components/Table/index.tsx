@@ -75,7 +75,7 @@ interface TableProps {
  */
 export function Table({ children, variant = 'bordered', className }: TableProps): JSX.Element {
   if (variant === 'loose') {
-    const tableBase = 'w-full border-separate border-spacing-x-1.5 border-spacing-y-1.5';
+    const tableBase = 'hc-table w-full border-separate border-spacing-x-1.5 border-spacing-y-1.5';
     const tableClasses = className ? `${tableBase} ${className}` : tableBase;
 
     return createElement(
@@ -85,7 +85,7 @@ export function Table({ children, variant = 'bordered', className }: TableProps)
     );
   }
 
-  const wrapperBase = 'overflow-hidden rounded-md border border-separator';
+  const wrapperBase = 'hc-table overflow-hidden rounded-md border border-separator';
   const wrapperClasses = className ? `${wrapperBase} ${className}` : wrapperBase;
 
   return createElement(

@@ -49,7 +49,9 @@ export function FooterButton({
   children,
   className
 }: Props): JSX.Element {
-  const classes = className ? `${footerSegment(active)} ${className}` : footerSegment(active);
+  const classes = className
+    ? `hc-footer-button ${footerSegment(active)} ${className}`
+    : `hc-footer-button ${footerSegment(active)}`;
 
   return (
     <button

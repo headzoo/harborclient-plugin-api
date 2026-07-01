@@ -94,7 +94,7 @@ export function SegmentedTabs<T extends string>({
 
   const visibleTabs = tabs.filter((tab) => !tab.hidden);
 
-  const groupClassName = [segmentGroup, fullWidth ? 'w-full' : '', className]
+  const groupClassName = ['hc-segmented-tabs', segmentGroup, fullWidth ? 'w-full' : '', className]
     .filter(Boolean)
     .join(' ');
 
@@ -158,11 +158,11 @@ export function SegmentedTabs<T extends string>({
             {...(isRadiogroup
               ? { role: 'radio', 'aria-checked': selected }
               : {
-                  role: 'tab',
-                  id: getTabId(tab.value),
-                  'aria-selected': selected,
-                  ...(context ? { 'aria-controls': getPanelId(tab.value) } : {})
-                })}
+                role: 'tab',
+                id: getTabId(tab.value),
+                'aria-selected': selected,
+                ...(context ? { 'aria-controls': getPanelId(tab.value) } : {})
+              })}
           >
             <span className="inline-flex items-center gap-1.5">
               {tab.label}

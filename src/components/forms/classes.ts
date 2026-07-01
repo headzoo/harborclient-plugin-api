@@ -46,12 +46,18 @@ const VARIANT_CLASSES: Record<Exclude<FieldVariant, 'plain'>, string> = {
  *
  * @param variant - Base styling preset; `plain` applies no preset classes.
  * @param className - Additional Tailwind classes appended after the preset.
- * @returns Combined class string, or undefined when both inputs are empty.
+ * @param rootClass - Stable component root class prepended to the result.
+ * @returns Combined class string, or undefined when all inputs are empty.
  */
-export function mergeFieldClasses(variant: FieldVariant, className?: string): string | undefined {
+export function mergeFieldClasses(
+  variant: FieldVariant,
+  className?: string,
+  rootClass?: string
+): string | undefined {
   const base = variant === 'plain' ? '' : VARIANT_CLASSES[variant];
-  if (base && className) return `${base} ${className}`;
-  if (base) return base;
-  if (className) return className;
-  return undefined;
+  const parts = [rootClass, base, className].filter(
+    (part): part is string => part != null && part !== ''
+  );
+  if (parts.length === 0) return undefined;
+  return parts.join(' ');
 }
