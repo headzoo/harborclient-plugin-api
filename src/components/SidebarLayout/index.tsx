@@ -30,7 +30,7 @@ export function SidebarLayout({ sidebar, children, className }: Props): JSX.Elem
     <div className={outer}>
       <div className="flex min-h-0 flex-1">
         {sidebar}
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
+        <div className="flex-1 overflow-y-auto p-6 pt-0!">{children}</div>
       </div>
     </div>
   );
