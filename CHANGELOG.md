@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 1.0.20 - 2026-07-02
+
 - Enhance TabCloseButton component with tabIndex prop for improved accessibility. (`4053939`)
 - Enhance SegmentedTabs component with keyboard navigation improvements. (`6ec88d2`)
 
