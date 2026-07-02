@@ -301,7 +301,7 @@ export function VariableInput({
       <div
         ref={backdropRef}
         aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden whitespace-nowrap px-2 py-1.5 text-[14px] text-inherit"
+        className="pointer-events-none absolute inset-0 overflow-hidden whitespace-nowrap px-2.5 py-1.5 text-[16px] text-inherit"
       >
         {safeValue ? (
           tokens.map((token, index) =>
@@ -341,7 +341,7 @@ export function VariableInput({
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={tooltip ? tooltipId : undefined}
-        className={`relative w-full min-w-0 border-none bg-transparent px-2 py-1.5 text-[14px] text-transparent caret-text focus-visible:shadow-none ${className}`}
+        className={`relative w-full min-w-0 border-none bg-transparent px-2.5 py-1.5 text-[16px] text-transparent caret-text focus-visible:shadow-none ${className}`}
         type="text"
         placeholder={placeholder}
         value={safeValue}

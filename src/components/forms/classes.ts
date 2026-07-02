@@ -14,11 +14,11 @@ export const fieldFrame = 'overflow-hidden rounded-md border border-separator bg
 
 /** Inset control style for standard settings and editor fields. */
 export const field =
-  'rounded-md border border-separator bg-field px-2 py-1 text-[15px] text-text app-no-drag';
+  'rounded-md border border-separator bg-field px-2.5 py-1.5 text-[16px] text-text app-no-drag';
 
 /** Surface style for modal and Team Hub form fields. */
 export const surfaceField =
-  'w-full rounded-md border border-separator bg-field px-3 py-2 text-[14px] text-text';
+  'w-full rounded-md border border-separator bg-field px-3 py-2.5 text-[15px] text-text';
 
 /** Transparent overlay checkbox input sized to {@link checkboxBox}. */
 export const checkboxInput =
