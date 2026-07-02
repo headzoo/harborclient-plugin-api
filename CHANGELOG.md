@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Refactor SegmentedTabs component styles for improved layout and accessibility. (`5993349`)
+
 ## 1.0.17 - 2026-07-02
 
 - Refactor SegmentedTabs component for improved accessibility attributes. (`c11f504`)

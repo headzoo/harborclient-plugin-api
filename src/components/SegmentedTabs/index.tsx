@@ -214,12 +214,17 @@ export function SegmentedTabs<T extends string>({
     }
   }, [editable, onChange, value, visibleSet, visibleTabs]);
 
-  const groupClassName = [
+  const outerClassName = [
     'hc-segmented-tabs',
     segmentGroup,
+    'items-center gap-1',
     fullWidth ? 'flex-1 min-w-0' : '',
     className
   ]
+    .filter(Boolean)
+    .join(' ');
+
+  const tabListClassName = ['inline-flex min-w-0 flex-1 items-center', fullWidth ? 'w-full' : '']
     .filter(Boolean)
     .join(' ');
 
@@ -257,9 +262,9 @@ export function SegmentedTabs<T extends string>({
   const isRadiogroup = pattern === 'radiogroup';
 
   return (
-    <div className="hc-segmented-tabs-row flex w-full items-center gap-1">
+    <div className={outerClassName}>
       <div
-        className={groupClassName}
+        className={tabListClassName}
         role={isRadiogroup ? 'radiogroup' : 'tablist'}
         aria-label={ariaLabel}
         {...(!isRadiogroup ? { 'aria-orientation': 'horizontal' as const } : {})}

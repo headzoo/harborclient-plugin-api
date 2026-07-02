@@ -28,6 +28,9 @@ interface Props<T extends string> {
 const menuItemClass =
   'flex w-full cursor-pointer items-center gap-2 border-none bg-transparent px-3.5 py-1.5 text-left text-[14px] text-text hover:bg-selection app-no-drag';
 
+const triggerClassName =
+  '!rounded-full hover:!bg-[rgba(0,122,255,0.18)] dark:hover:!bg-[rgba(10,132,255,0.22)]';
+
 /**
  * Caret-triggered menu for toggling which segmented tabs are visible.
  */
@@ -177,6 +180,7 @@ export function SegmentedTabsVisibilityMenu<T extends string>({
         innerRef={triggerRef}
         type="button"
         variant="icon"
+        className={triggerClassName}
         aria-label="Customize visible tabs"
         aria-haspopup="menu"
         aria-expanded={isOpen}
