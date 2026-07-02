@@ -6,6 +6,7 @@ export {
   checkboxBox,
   radioInput,
   radioCircle,
+  radioDot,
   mergeFieldClasses,
   type FieldVariant
 } from './classes.js';

@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes, JSX, Ref } from 'react';
-import { radioCircle, radioInput } from './classes.js';
+import { radioCircle, radioDot, radioInput } from './classes.js';
 
 interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   /**
@@ -25,7 +25,7 @@ export function Radio({ ref, className, ...props }: Props): JSX.Element {
     <span className={wrapperClasses}>
       <input ref={ref} type="radio" className={radioInput} {...props} />
       <span className={radioCircle} aria-hidden>
-        <span className="h-2 w-2 rounded-full bg-accent" />
+        <span className={radioDot} />
       </span>
     </span>
   );

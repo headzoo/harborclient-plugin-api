@@ -34,7 +34,11 @@ export const radioInput =
 
 /** Custom radio circle styled via `peer-checked` / `peer-focus-visible` on {@link radioInput}. */
 export const radioCircle =
-  'pointer-events-none flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-separator bg-field peer-checked:border-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent peer-disabled:cursor-not-allowed peer-disabled:opacity-50 [&>span]:opacity-0 peer-checked:[&>span]:opacity-100';
+  'pointer-events-none relative h-[18px] w-[18px] shrink-0 leading-none rounded-full border border-separator bg-field peer-checked:border-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent peer-disabled:cursor-not-allowed peer-disabled:opacity-50 [&>span]:opacity-0 peer-checked:[&>span]:opacity-100';
+
+/** Checked-state dot centered inside {@link radioCircle}. */
+export const radioDot =
+  'absolute left-1/2 top-1/2 block h-2 w-2 -translate-x-1/2 -translate-y-1/2 shrink-0 rounded-full bg-accent';
 
 const VARIANT_CLASSES: Record<Exclude<FieldVariant, 'plain'>, string> = {
   control: field,
