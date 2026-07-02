@@ -17,6 +17,12 @@ interface Props {
    * Optional tooltip label; defaults to "Close tab".
    */
   title?: string;
+
+  /**
+   * Tab order index for roving-tablist layouts. Pass `0` on the active tab and
+   * `-1` on inactive tabs so the tab label receives focus before the close control.
+   */
+  tabIndex?: number;
 }
 
 /**
@@ -25,14 +31,21 @@ interface Props {
  * @param ariaLabel - Accessible name describing which tab closes.
  * @param onClick - Click handler; callers should stop propagation when needed.
  * @param title - Optional native tooltip text.
+ * @param tabIndex - Tab order index; use with roving tabindex on the tab label.
  */
-export function TabCloseButton({ ariaLabel, onClick, title = 'Close tab' }: Props): JSX.Element {
+export function TabCloseButton({
+  ariaLabel,
+  onClick,
+  title = 'Close tab',
+  tabIndex
+}: Props): JSX.Element {
   return (
     <button
       type="button"
       className="hc-tab-close-button inline-flex aspect-square shrink-0 cursor-pointer items-center justify-center self-stretch rounded-md border-none bg-transparent text-[14px] text-muted hover:bg-selection hover:text-text focus-visible:bg-selection focus-visible:text-text app-no-drag"
       title={title}
       aria-label={ariaLabel}
+      tabIndex={tabIndex}
       onClick={onClick}
     >
       <FaIcon icon={faXmark} className="h-3.5 w-3.5" />
