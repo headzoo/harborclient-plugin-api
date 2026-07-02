@@ -8,6 +8,7 @@ import {
   useState
 } from '@harborclient/sdk/react';
 import type { JSX, KeyboardEvent } from 'react';
+import { getFocusableElements } from '../useDialogFocus.js';
 import { resolveTabListKeyAction } from '../utils.js';
 import { segment, segmentGroup } from '../classes.js';
 import { SegmentedTabsContext } from './SegmentedTabsContext.js';
@@ -17,6 +18,54 @@ import type { TabItem } from './types.js';
 export { SegmentedTabsGroup } from './SegmentedTabsGroup.js';
 export { SegmentedTabPanel } from './SegmentedTabPanel.js';
 export type { TabItem } from './types.js';
+
+/**
+ * Returns the tab value whose button currently has keyboard focus.
+ *
+ * @param tabRefs - Map of tab values to their button elements.
+ * @returns Focused tab value, or undefined when focus is outside the tab buttons.
+ */
+function getFocusedTabValue<T extends string>(tabRefs: Map<T, HTMLButtonElement>): T | undefined {
+  const active = document.activeElement;
+  if (active == null) return undefined;
+
+  for (const [tabValue, button] of tabRefs.entries()) {
+    if (button === active) return tabValue;
+  }
+
+  return undefined;
+}
+
+/**
+ * Moves focus to the first visible focusable element inside a tab panel.
+ *
+ * Uses {@link getFocusableElements} first, then falls back to a direct query
+ * when layout APIs report no visible descendants (for example in jsdom).
+ *
+ * @param panel - Tab panel element linked from the active tab.
+ * @returns True when focus moved into the panel.
+ */
+function focusFirstFocusableInPanel(panel: HTMLElement | null): boolean {
+  if (panel == null) return false;
+
+  let firstFocusable: HTMLElement | undefined = getFocusableElements(panel)[0];
+
+  if (firstFocusable == null) {
+    const selector =
+      'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    firstFocusable =
+      Array.from(panel.querySelectorAll<HTMLElement>(selector)).find(
+        (element) => !element.closest('[aria-hidden="true"]')
+      ) ?? undefined;
+  }
+
+  if (firstFocusable == null || typeof firstFocusable.focus !== 'function') {
+    return false;
+  }
+
+  firstFocusable.focus();
+  return true;
+}
 
 interface Props<T extends string> {
   /**
@@ -228,14 +277,45 @@ export function SegmentedTabs<T extends string>({
     .filter(Boolean)
     .join(' ');
 
+  const isRadiogroup = pattern === 'radiogroup';
+
   /**
    * Moves selection with arrow, Home, and End keys and focuses the newly
-   * selected tab or radio control.
+   * selected tab or radio control. ArrowDown on a focused tab moves focus into
+   * the linked tab panel when used inside `SegmentedTabsGroup`.
    *
    * @param event - Keyboard event from the tab list or radio group container.
    */
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>): void => {
+      if (event.key === 'ArrowDown' && !isRadiogroup && context) {
+        const focusedTabValue = getFocusedTabValue(tabRefs.current);
+        if (focusedTabValue !== undefined) {
+          event.preventDefault();
+
+          /**
+           * Focuses the first focusable control in the panel for the focused tab.
+           */
+          const focusPanel = (): void => {
+            const panel = document.getElementById(getPanelId(focusedTabValue));
+            if (panel instanceof HTMLElement) {
+              focusFirstFocusableInPanel(panel);
+            }
+          };
+
+          if (focusedTabValue !== value) {
+            onChange(focusedTabValue);
+            requestAnimationFrame(() => {
+              requestAnimationFrame(focusPanel);
+            });
+          } else {
+            requestAnimationFrame(focusPanel);
+          }
+
+          return;
+        }
+      }
+
       const currentIndex = visibleTabs.findIndex((tab) => tab.value === value);
       const disabledIndices = visibleTabs
         .map((tab, index) => (tab.disabled ? index : -1))
@@ -256,10 +336,8 @@ export function SegmentedTabs<T extends string>({
         tabRefs.current.get(nextTab.value)?.focus();
       });
     },
-    [visibleTabs, value, onChange]
+    [visibleTabs, value, onChange, isRadiogroup, context, getPanelId]
   );
-
-  const isRadiogroup = pattern === 'radiogroup';
 
   return (
     <div className={outerClassName}>
@@ -284,7 +362,7 @@ export function SegmentedTabs<T extends string>({
               type="button"
               className={tabClassName}
               disabled={tab.disabled}
-              tabIndex={selected ? 0 : -1}
+              tabIndex={tab.disabled ? -1 : 0}
               onClick={() => onChange(tab.value)}
               {...(isRadiogroup
                 ? { role: 'radio', 'aria-checked': selected }

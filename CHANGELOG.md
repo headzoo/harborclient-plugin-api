@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Enhance SegmentedTabs component with keyboard navigation improvements. (`6ec88d2`)
+
 ## 1.0.19 - 2026-07-02
 
 - Enhance MethodSelect component with dynamic method color classes. (`6fbc2f2`)
