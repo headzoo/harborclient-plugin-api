@@ -26,7 +26,7 @@ export function MethodSelect({ value, onChange }: Props): JSX.Element {
   return (
     <Select
       variant="plain"
-      className={`hc-method-select w-[100px] shrink-0 cursor-pointer appearance-none border-none bg-transparent px-2 py-1.5 text-[14px] leading-none font-normal focus:outline-none focus-visible:outline-none focus-visible:shadow-none app-no-drag ${methodColorClass(value)}`}
+      className={`hc-method-select w-[100px] shrink-0 cursor-pointer appearance-none border-none bg-transparent px-2 py-1.5 text-[14px] leading-none font-normal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent app-no-drag ${methodColorClass(value)}`}
       value={value}
       aria-label="HTTP method"
       onChange={(e) => onChange(e.target.value as HttpMethod)}

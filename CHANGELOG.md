@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Update MethodSelect component styles for improved focus visibility. (`1077ed8`)
+
 ## 1.0.20 - 2026-07-02
 
 - Enhance TabCloseButton component with tabIndex prop for improved accessibility. (`4053939`)
