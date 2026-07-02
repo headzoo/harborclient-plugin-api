@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Refactor FormGroup component to improve ID resolution logic. (`6ad450d`)
 - Enhance FormGroup and VariableInput components for improved usability and styling. (`673bf2b`)
 
 ## 1.0.12 - 2026-07-01

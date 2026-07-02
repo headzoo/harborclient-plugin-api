@@ -204,11 +204,11 @@ export function FormGroup({
 
   const resolvedDescriptionId =
     description != null && description !== ''
-      ? descriptionId ?? (htmlFor ? `${htmlFor}-description` : undefined)
+      ? (descriptionId ?? (htmlFor ? `${htmlFor}-description` : undefined))
       : undefined;
   const resolvedErrorId =
     error != null && error !== ''
-      ? errorId ?? (htmlFor ? `${htmlFor}-error` : undefined)
+      ? (errorId ?? (htmlFor ? `${htmlFor}-error` : undefined))
       : undefined;
   const describedByIds = [resolvedDescriptionId, resolvedErrorId].filter(
     (id): id is string => id != null
