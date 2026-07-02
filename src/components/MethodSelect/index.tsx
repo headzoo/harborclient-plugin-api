@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import type { HttpMethod } from '../../types.js';
+import { methodColorClass } from '../../ui/tokens.js';
 import { Select } from '../forms/index.js';
 
 const METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
@@ -25,13 +26,13 @@ export function MethodSelect({ value, onChange }: Props): JSX.Element {
   return (
     <Select
       variant="plain"
-      className="hc-method-select w-[100px] shrink-0 cursor-pointer appearance-none border-none bg-transparent px-2 py-1 text-[14px] font-semibold app-no-drag"
+      className={`hc-method-select w-[100px] shrink-0 cursor-pointer appearance-none border-none bg-transparent px-2 py-1.5 text-[14px] leading-none font-normal focus:outline-none focus-visible:outline-none focus-visible:shadow-none app-no-drag ${methodColorClass(value)}`}
       value={value}
       aria-label="HTTP method"
       onChange={(e) => onChange(e.target.value as HttpMethod)}
     >
       {METHODS.map((method) => (
-        <option key={method} value={method}>
+        <option key={method} value={method} className={methodColorClass(method)}>
           {method}
         </option>
       ))}

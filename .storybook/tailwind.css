@@ -14,6 +14,14 @@
   --color-warning: #ffd60a;
   --color-info: #64d2ff;
 
+  --color-method-get: var(--mac-method-get);
+  --color-method-post: var(--mac-method-post);
+  --color-method-put: var(--mac-method-put);
+  --color-method-patch: var(--mac-method-patch);
+  --color-method-delete: var(--mac-method-delete);
+  --color-method-head: var(--mac-method-head);
+  --color-method-options: var(--mac-method-options);
+
   --mac-accent: #0a84ff;
   --radius-xs: 0.0625rem;
   --radius-sm: 0.125rem;
@@ -27,6 +35,14 @@
 
 :root {
   color-scheme: dark;
+
+  --mac-method-get: #2d8a4e;
+  --mac-method-post: #0066cc;
+  --mac-method-put: #b8860b;
+  --mac-method-patch: #7b5ea7;
+  --mac-method-delete: #c0392b;
+  --mac-method-head: #6e6e73;
+  --mac-method-options: #6e6e73;
 }
 
 body {

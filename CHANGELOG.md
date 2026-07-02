@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Enhance MethodSelect component with dynamic method color classes. (`6fbc2f2`)
+
 ## 1.0.18 - 2026-07-02
 
 - Refactor SegmentedTabs component styles for improved layout and accessibility. (`5993349`)
