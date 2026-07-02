@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 1.0.15 - 2026-07-02
+
 - Enhance VariableInput and form styles for improved usability. (`fc6eca5`)
 
 ## 1.0.14 - 2026-07-02
