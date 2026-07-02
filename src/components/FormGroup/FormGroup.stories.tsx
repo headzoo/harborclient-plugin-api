@@ -56,6 +56,23 @@ export const Checkbox: Story = {
   }
 };
 
+export const CheckboxWithDescription: Story = {
+  args: {
+    label: 'SSL certificate verification',
+    htmlFor: 'verify-ssl',
+    description: 'When enabled, HTTPS requests reject invalid or untrusted TLS certificates.',
+    layout: 'checkbox',
+    children: <CheckboxControl id="verify-ssl" />
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Checkbox rows with helper text keep the description inside the bordered form group.'
+      }
+    }
+  }
+};
+
 export const Radio: Story = {
   args: {
     label: 'Content type'

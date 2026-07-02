@@ -35,17 +35,17 @@ interface Props {
  */
 export function PageHeader({ title, description, icon, children, className }: Props): JSX.Element {
   const wrapperClassName = className
-    ? `hc-page-header -mx-6 mb-4 flex flex-wrap items-center gap-2 border-b border-separator px-6 py-3 ${className}`
-    : 'hc-page-header -mx-6 mb-4 flex flex-wrap items-center gap-2 border-b border-separator px-6 py-3';
+    ? `hc-page-header -mx-6 mb-4 flex flex-wrap items-center gap-2 border-b border-separator px-6 py-4 ${className}`
+    : 'hc-page-header -mx-6 mb-4 flex flex-wrap items-center gap-2 border-b border-separator px-6 py-4';
 
   return (
     <div className={wrapperClassName}>
       <div className="min-w-0 flex-1">
-        <h2 className="m-0 flex items-center gap-2 text-[18px] font-semibold text-text leading-none">
+        <h2 className="m-0 flex items-center gap-2 text-[18px] font-semibold text-text leading-none mb-2">
           {icon ? <FaIcon icon={icon} className="h-5 w-5 shrink-0 text-muted" aria-hidden /> : null}
           {title}
         </h2>
-        {description ? <p className="m-0 mt-1 text-[14px] text-muted">{description}</p> : null}
+        {description ? <p className="m-0 mt-1 text-[16px] text-muted leading-none">{description}</p> : null}
       </div>
       {children ? <div className="flex flex-wrap items-center gap-2">{children}</div> : null}
     </div>

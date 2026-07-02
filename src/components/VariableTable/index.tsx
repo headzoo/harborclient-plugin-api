@@ -67,7 +67,7 @@ export function VariableTable({ variables, onChange, description }: Props): JSX.
       {description && <p className="mb-3 text-[14px] text-muted">{description}</p>}
 
       <div className="flex flex-col gap-1.5">
-        <Table variant="loose">
+        <Table>
           <TableHeader>
             <tr>
               <TableHead>Key</TableHead>

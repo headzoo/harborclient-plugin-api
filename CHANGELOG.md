@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- Enhance FormGroup and PageHeader components for improved usability and styling. (`739a87b`)
+
 ## 1.0.13 - 2026-07-02
 
 - Refactor FormGroup component to improve ID resolution logic. (`6ad450d`)

@@ -36,7 +36,8 @@ interface Props {
   htmlFor?: string;
 
   /**
-   * Muted helper text rendered below the label and above the control (stacked layout only).
+   * Muted helper text rendered below the label and above the control (stacked layout),
+   * or below the checkbox row inside the bordered box (checkbox layout).
    */
   description?: ReactNode;
 
@@ -90,7 +91,7 @@ interface Props {
  * @returns Class string for the label element.
  */
 function labelClasses(tone: FormGroupLabelTone, srOnly: boolean, inline: boolean): string {
-  const base = 'text-[14px]';
+  const base = 'text-[18px]';
   const visibility = srOnly ? 'sr-only' : '';
   if (inline) {
     const color = tone === 'muted' ? 'shrink-0 text-muted' : 'shrink-0 font-medium text-text';
@@ -139,7 +140,7 @@ export function FormGroup({
   if (layout === 'associated') {
     const associatedClasses = labelClassName
       ? `hc-form-group ${labelClassName}`
-      : 'hc-form-group text-[14px] text-text';
+      : 'hc-form-group text-[16px] text-text';
     return (
       <label htmlFor={htmlFor} className={associatedClasses}>
         {label}
@@ -151,7 +152,7 @@ export function FormGroup({
     const wrapperClasses = extra
       ? `hc-form-group flex items-start gap-2 ${extra}`
       : 'hc-form-group flex items-start gap-2';
-    const adjacentLabelClasses = labelClassName ?? 'min-w-0 flex-1 text-[14px] text-text';
+    const adjacentLabelClasses = labelClassName ?? 'min-w-0 flex-1 text-[16px] text-text';
     const linkedChildren = enhanceControl(children, { id: controlId });
     return (
       <div className={wrapperClasses}>
@@ -165,8 +166,8 @@ export function FormGroup({
 
   if (layout === 'radio') {
     const wrapperClasses = extra
-      ? `hc-form-group inline-flex cursor-pointer items-center gap-1.5 text-[14px] text-text app-no-drag ${extra}`
-      : 'hc-form-group inline-flex cursor-pointer items-center gap-1.5 text-[14px] text-text app-no-drag';
+      ? `hc-form-group inline-flex cursor-pointer items-center gap-1.5 text-[16px] text-text app-no-drag ${extra}`
+      : 'hc-form-group inline-flex cursor-pointer items-center gap-1.5 text-[16px] text-text app-no-drag';
     const linkedChildren = enhanceControl(children, { id: controlId });
     return (
       <label htmlFor={controlId} className={wrapperClasses}>
@@ -177,22 +178,57 @@ export function FormGroup({
   }
 
   if (layout === 'checkbox') {
+    const resolvedDescriptionId =
+      description != null && description !== ''
+        ? (descriptionId ?? (htmlFor ? `${htmlFor}-description` : undefined))
+        : undefined;
+    const resolvedErrorId =
+      error != null && error !== ''
+        ? (errorId ?? (htmlFor ? `${htmlFor}-error` : undefined))
+        : undefined;
+    const describedByIds = [resolvedDescriptionId, resolvedErrorId].filter(
+      (id): id is string => id != null
+    );
+    const describedBy = describedByIds.length > 0 ? describedByIds.join(' ') : undefined;
+    const linkedChildren = enhanceControl(children, {
+      describedBy,
+      id: controlId,
+      invalid: resolvedErrorId != null
+    });
     const wrapperClasses = extra
-      ? `hc-form-group flex items-center gap-2 ${extra}`
-      : 'hc-form-group flex items-center gap-2';
-    const linkedChildren = enhanceControl(children, { id: controlId });
+      ? `hc-form-group flex flex-col gap-1 p-4 border border-separator rounded-md ${extra}`
+      : 'hc-form-group flex flex-col gap-1 p-4 border border-separator rounded-md';
     return (
-      <label htmlFor={controlId} className={wrapperClasses}>
-        {linkedChildren}
-        <span className={labelClasses(labelTone, srOnly, false)}>{label}</span>
-      </label>
+      <div className={wrapperClasses}>
+        <label htmlFor={controlId} className="flex flex-col gap-1">
+          <span className="flex items-center gap-2">
+            {linkedChildren}
+            <span className={`${labelClasses(labelTone, srOnly, false)} leading-none`}>
+              {label}
+            </span>
+          </span>
+          {resolvedDescriptionId ? (
+            <p
+              id={resolvedDescriptionId}
+              className="hc-form-description m-0 pl-[26px] text-[14px] text-muted"
+            >
+              {description}
+            </p>
+          ) : null}
+        </label>
+        {resolvedErrorId ? (
+          <FieldError id={resolvedErrorId} spacing="field">
+            {error}
+          </FieldError>
+        ) : null}
+      </div>
     );
   }
 
   if (layout === 'inline') {
     const wrapperClasses = extra
-      ? `hc-form-group flex min-w-0 flex-1 items-center gap-2 ${extra}`
-      : 'hc-form-group flex min-w-0 flex-1 items-center gap-2';
+      ? `hc-form-group flex min-w-0 flex-1 items-center gap-2 p-4 border border-separator rounded-md ${extra}`
+      : 'hc-form-group flex min-w-0 flex-1 items-center gap-2 p-4 border border-separator rounded-md';
     const linkedChildren = enhanceControl(children, { id: controlId });
     return (
       <label htmlFor={controlId} className={wrapperClasses}>
@@ -220,8 +256,8 @@ export function FormGroup({
     id: htmlFor
   });
   const wrapperClasses = extra
-    ? `hc-form-group flex flex-col gap-1 ${extra}`
-    : 'hc-form-group flex flex-col gap-1';
+    ? `hc-form-group flex flex-col gap-1 p-4 text-[16px] border border-separator rounded-md ${extra}`
+    : 'hc-form-group flex flex-col gap-1 p-4 text-[16px] border border-separator rounded-md';
 
   return (
     <div className={wrapperClasses}>
