@@ -151,7 +151,7 @@ export function VariableInput({
    */
   const scheduleHide = (): void => {
     cancelHide();
-    hideTimer.current = window.setTimeout(() => setTooltip(null), 120);
+    hideTimer.current = window.setTimeout(() => setTooltip(null), 400);
   };
 
   /**
@@ -248,7 +248,7 @@ export function VariableInput({
       }
     }
 
-    setTooltip(null);
+    scheduleHide();
   };
 
   /**
@@ -380,10 +380,10 @@ export function VariableInput({
         <div
           id={tooltipId}
           role="tooltip"
-          className="pointer-events-auto fixed z-50 flex max-w-sm -translate-x-1/2 -translate-y-full flex-col gap-1.5 rounded-md border border-separator bg-surface px-3 py-2 text-[14px] text-text shadow-md"
+          className="pointer-events-auto fixed z-50 flex max-w-sm -translate-x-1/2 -translate-y-full flex-col gap-2 rounded-md border border-separator bg-surface px-4 py-3 text-[14px] text-text shadow-md after:pointer-events-auto after:absolute after:-bottom-2 after:left-0 after:right-0 after:h-2 after:content-['']"
           style={{ top: tooltip.top - 4, left: tooltip.left }}
           onMouseEnter={cancelHide}
-          onMouseLeave={() => setTooltip(null)}
+          onMouseLeave={scheduleHide}
         >
           <span className={tooltipContent.muted ? 'text-muted' : undefined}>
             {tooltipContent.text}
@@ -391,7 +391,7 @@ export function VariableInput({
           {onEditVariable && (
             <button
               type="button"
-              className="self-start text-[14px] text-accent hover:underline app-no-drag"
+              className="-mx-1 self-start rounded px-1 py-0.5 text-[14px] text-accent hover:underline app-no-drag"
               aria-label={`Edit value for ${tooltip.key}`}
               onClick={() => {
                 onEditVariable();

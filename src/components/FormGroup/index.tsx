@@ -36,7 +36,7 @@ interface Props {
   htmlFor?: string;
 
   /**
-   * Muted helper text rendered below the control (stacked layout only).
+   * Muted helper text rendered below the label and above the control (stacked layout only).
    */
   description?: ReactNode;
 
@@ -108,7 +108,7 @@ function labelClasses(tone: FormGroupLabelTone, srOnly: boolean, inline: boolean
  * @param label - Field label text.
  * @param children - Input, select, or composite control content.
  * @param htmlFor - ID of the primary associated control.
- * @param description - Optional helper text below the control.
+ * @param description - Optional helper text below the label and above the control.
  * @param error - Optional validation error below the control.
  * @param errorId - Explicit error element id for `aria-describedby`.
  * @param descriptionId - Explicit description element id for `aria-describedby`.
@@ -204,11 +204,11 @@ export function FormGroup({
 
   const resolvedDescriptionId =
     description != null && description !== ''
-      ? (descriptionId ?? (htmlFor ? `${htmlFor}-description` : undefined))
+      ? descriptionId ?? (htmlFor ? `${htmlFor}-description` : undefined)
       : undefined;
   const resolvedErrorId =
     error != null && error !== ''
-      ? (errorId ?? (htmlFor ? `${htmlFor}-error` : undefined))
+      ? errorId ?? (htmlFor ? `${htmlFor}-error` : undefined)
       : undefined;
   const describedByIds = [resolvedDescriptionId, resolvedErrorId].filter(
     (id): id is string => id != null
@@ -227,12 +227,12 @@ export function FormGroup({
     <div className={wrapperClasses}>
       <label htmlFor={htmlFor} className="flex flex-col gap-1">
         <span className={labelClasses(labelTone, srOnly, false)}>{label}</span>
-        {control}
         {resolvedDescriptionId ? (
-          <p id={resolvedDescriptionId} className="m-0 text-[14px] text-muted">
+          <p id={resolvedDescriptionId} className="hc-form-description m-0 text-[14px] text-muted">
             {description}
           </p>
         ) : null}
+        {control}
       </label>
       {resolvedErrorId ? (
         <FieldError id={resolvedErrorId} spacing="field">
